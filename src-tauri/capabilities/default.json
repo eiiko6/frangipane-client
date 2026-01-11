@@ -32,6 +32,9 @@
         }
       ]
     },
-    "websocket:default"
+    "websocket:default",
+    "upload:default",
+    "dialog:default"
   ]
 }
+

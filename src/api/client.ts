@@ -9,11 +9,14 @@ export async function apiFetch<T>(
 ): Promise<T> {
   const auth = await getAuthData()
 
+  const isFormData = options.body instanceof FormData;
+
   const res = await fetch(`${API}${path}`, {
     ...options,
     method: options.method || 'GET',
     headers: {
-      'Content-Type': 'application/json',
+      // Only add json header if it's not formdata
+      ...(!isFormData ? { 'Content-Type': 'application/json' } : {}),
       ...(auth.token ? { Authorization: `Bearer ${auth.token}` } : {}),
       ...options.headers,
     },

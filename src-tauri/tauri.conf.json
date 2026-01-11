@@ -19,11 +19,18 @@
         "resizable": true,
         "fullscreen": false,
         "center": true,
-        "theme": "Dark"
+        "theme": "Dark",
+        "dragDropEnabled": true
       }
     ],
     "security": {
-      "csp": null
+      "csp": null,
+      "assetProtocol": {
+        "enable": true,
+        "scope": [
+          "**"
+        ]
+      }
     }
   },
   "bundle": {

@@ -5,6 +5,7 @@ import { ref, computed } from 'vue'
 import { fetchFriendRequests } from './api/friends'
 import { fetchRoomInvites } from './api/rooms'
 import type { FriendRequest, RoomInvite } from './types'
+import { getAvatar } from './api/account'
 
 export const initAuth = authStore.getAuthData
 export const getLastRoom = authStore.getLastRoom
@@ -19,7 +20,8 @@ export async function login(email: string, username: string, password: string) {
   let user: User = {
     uuid: res.uuid,
     username: res.username,
-    email: res.email
+    email: res.email,
+    avatar_url: await getAvatar(res.uuid)
   };
   await authStore.saveAuthData(res.token, user)
   return { token: res.token, uuid: res.uuid, isAuthenticated: true }

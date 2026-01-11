@@ -28,7 +28,7 @@
         </button>
 
         <button type="submit" :disabled="isSubmitting">
-          {{ isSubmitting ? $t('settings-updating') : $t('settings-update-save') }}
+          {{ isSubmitting ? $t('shared-updating') : $t('shared-save') }}
         </button>
       </div>
     </form>
@@ -95,8 +95,7 @@ async function submit() {
 .backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;

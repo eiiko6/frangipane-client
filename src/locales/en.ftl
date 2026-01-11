@@ -62,6 +62,7 @@ notifications-error-room-accept = An error occurred while accepting the invite.
 notifications-error-room-decline = An error occurred while declining the invite.
 
 ## Settings page
+settings-loading = Loading settings...
 settings-title = Settings
 settings-account = Account
 settings-language = Language
@@ -74,6 +75,9 @@ settings-account-update-modal-title = Update your Account
 settings-account-update-subtitle = Only fill in the fields you wish to change.
 settings-new-password = New Password
 settings-new-password-confirm = Confirm new password
+settings-upload-prompt = Upload an image
+settings-upload-avatar-btn = Upload an avatar
+settings-upload-avatar-title = Upload an avatar
 settings-update-save = Save Changes
 settings-updating = Updating...
 settings-error-required = Username and Email are required.
@@ -82,3 +86,5 @@ settings-error-failed = Update failed
 ## Shared
 shared-cancel = Cancel
 shared-error = An error occurred
+shared-save = Save
+shared-updating = Updating

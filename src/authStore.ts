@@ -1,5 +1,6 @@
 import { load, Store } from '@tauri-apps/plugin-store'
 import { UpdateUserResponse, User } from './types'
+import { getAvatar } from './api/account'
 
 let store: Store | null = null
 
@@ -32,12 +33,25 @@ export async function updateLocalUser(newData: UpdateUserResponse, uuid?: string
   const updatedUser = {
     username: newData.username,
     email: newData.email,
-    uuid
+    uuid,
+    avatar_url: `${getAvatar(uuid || '')}?t=${Date.now()}`
   }
 
   const s = await getStore()
   await s.set('user', updatedUser)
   await s.save()
+}
+
+export async function refreshLocalUser() {
+  const s = await getStore()
+  const user = await s.get<User>('user')
+
+  if (user) {
+    user.avatar_url = `${getAvatar(user.uuid)}?t=${Date.now()}`
+
+    await s.set('user', user)
+    await s.save()
+  }
 }
 
 export async function setLastRoom(uuid: string) {

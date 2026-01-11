@@ -62,6 +62,7 @@ notifications-error-room-accept = Erreur lors de l'acceptation de l'invitation.
 notifications-error-room-decline = Erreur lors du refus de l'invitation.
 
 ## Settings page
+settings-loading = Chargement des paramètres...
 settings-title = Paramètres
 settings-account = Compte
 settings-language = Langue
@@ -74,11 +75,14 @@ settings-account-update-modal-title = Modifier votre compte
 settings-account-update-subtitle = Remplissez uniquement ce que vous souhaitez changer.
 settings-new-password = Nouveau mot de passe
 settings-new-password-confirm = Confirmer le mot de passe
-settings-update-save = Enregistrer
-settings-updating = Mise à jour...
+settings-upload-prompt = Importer une image
+settings-upload-avatar-btn = Importer un avatar
+settings-upload-avatar-title = Importer un avatar
 settings-error-required = Le nom d'utilisateur et l'email sont requis.
 settings-error-failed = Échec de la mise à jour
 
 ## Shared
 shared-cancel = Annuler
 shared-error = Une erreur est survenue
+shared-save = Enregistrer
+shared-updating = Mise à jour...
