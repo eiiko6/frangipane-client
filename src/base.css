@@ -19,6 +19,7 @@ body,
 :root {
   --bg: #0f1116;
   --panel: #171922;
+  --panel-accent: #12141B;
   --text: #e6e6eb;
   --muted: #9aa0aa;
   --accent: #f27aa3;
