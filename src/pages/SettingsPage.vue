@@ -3,12 +3,12 @@
     <h1>{{ $t('settings-title') }}</h1>
 
     <UpdateAccountModal v-if="showUpdateModal" :user="user" @close="showUpdateModal = false" @updated="fetchUserData" />
-    <UploadAvatarModal v-if="showAvatarModal" @close="showAvatarModal = false" @updated="fetchUserData" />
+    <UploadAvatarModal v-if="showAvatarModal" @close="showAvatarModal = false" />
 
     <h2>{{ $t('settings-account') }}</h2>
     <div v-if="user" class="info-card">
       <div class="avatar-display">
-        <img :src="getAvatar(user.uuid)" @error="handleAvatarError" class="avatar-img" />
+        <img :src="getAvatarUrl(user.uuid)" @error="handleAvatarError" class="avatar-img" />
 
         <button class="update-btn" @click="showAvatarModal = true">
           {{ $t('settings-upload-avatar-btn') || 'Change Avatar' }}
@@ -49,20 +49,24 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { logout as authLogout } from '../store.ts'
-import { getAuthData } from "../authStore.ts"
+import { getAuthData } from "../store.ts"
 import type { User } from "../types"
 import UpdateAccountModal from '../components/UpdateAccountModal.vue'
 import { useFluent } from 'fluent-vue'
-import { saveLocalePreference, getLocalePreference } from "../authStore.ts"
+import { saveLocalePreference, getLocalePreference } from "../store.ts"
 import { getSupportedLanguagesMetadata, setLanguage } from '../i18n'
 import UploadAvatarModal from '../components/UploadAvatarModal.vue'
 import defaultAvatar from '../assets/default-avatar.png'
-import { getAvatar } from '../api/account.ts'
+import { getAvatarUrl } from '../store.ts'
 
 const handleAvatarError = (event: Event) => {
   const img = event.target as HTMLImageElement;
   img.src = defaultAvatar;
 };
+
+async function handleAvatarUpdated() {
+  await fetchUserData()
+}
 
 const showAvatarModal = ref(false)
 

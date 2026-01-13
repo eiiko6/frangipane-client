@@ -1,5 +1,5 @@
 import { fetch } from '@tauri-apps/plugin-http';
-import { getAuthData, clearAuthData } from '../authStore'
+import { getAuthData, clearAuthData } from '../store'
 import { API } from '../main.ts'
 import router from '../router'
 

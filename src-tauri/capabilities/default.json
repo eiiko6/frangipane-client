@@ -16,6 +16,9 @@
           "url": "http://127.0.0.1:*"
         },
         {
+          "url": "http://192.168.1.183:*"
+        },
+        {
           "url": "https://alatreon.org/chatapp/*"
         }
       ],
@@ -28,13 +31,23 @@
           "url": "ws://127.0.0.1:*"
         },
         {
+          "url": "http://192.168.1.183:*"
+        },
+        {
           "url": "wss://alatreon.org/chatapp/*"
         }
       ]
     },
     "websocket:default",
     "upload:default",
-    "dialog:default"
+    "dialog:default",
+    "fs:default",
+    {
+      "identifier": "fs:scope",
+      "allow": [
+        "*"
+      ]
+    }
   ]
 }
 

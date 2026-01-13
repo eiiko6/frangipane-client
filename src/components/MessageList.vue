@@ -2,7 +2,7 @@
   <ul>
     <li v-for="(m, i) in messages" :key="i" class="message" :class="{ 'is-me': m.sender_uuid === currentUserUuid }">
       <div class="sender-info">
-        <img :src="getAvatar(m.sender_uuid)" @error="handleAvatarError" class="sender-avatar" />
+        <img :src="getAvatarUrl(m.sender_uuid)" @error="handleAvatarError" class="sender-avatar" />
         <div class="sender">{{ m.sender }}</div>
         <span class="timestamp">{{ m.sent_at }}</span>
       </div>
@@ -11,13 +11,12 @@
   </ul>
 </template>
 
-
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import type { Message } from '../types'
-import { getAvatar } from '../api/account.ts'
+import { getAvatarUrl } from '../store.ts'
 import defaultAvatar from '../assets/default-avatar.png'
-import { getAuthData } from '../authStore';
+import { getAuthData } from '../store.ts';
 
 defineProps<{ messages: Message[] }>()
 
@@ -72,7 +71,7 @@ ul {
   /* border-radius: var(--radius) var(--radius) 0 0; */
   /* background-color: rgba(255, 255, 255, 0.02); */
   width: 100%;
-  padding: 5px 10px;
+  padding: 5px 18px;
 }
 
 .sender-avatar {

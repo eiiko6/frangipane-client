@@ -35,7 +35,7 @@ import MessageList from "./MessageList.vue";
 import MessageInput from "./MessageInput.vue";
 import InvitePeopleModal from './InvitePeopleModal.vue';
 import WebSocket from '@tauri-apps/plugin-websocket';
-import { getAuthData } from "../authStore.ts";
+import { getAuthData } from "../store.ts";
 import { fetchRoomInfo } from "../api/rooms.ts";
 
 const props = defineProps<{ uuid: string }>();

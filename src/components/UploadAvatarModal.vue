@@ -41,8 +41,11 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import { uploadAvatar } from '../api/account';
 import { listen, UnlistenFn } from '@tauri-apps/api/event';
 import { open } from '@tauri-apps/plugin-dialog';
-import { convertFileSrc } from '@tauri-apps/api/core';
-import { refreshLocalUser } from '../authStore';
+// import { convertFileSrc } from '@tauri-apps/api/core'; 
+import { readFile } from '@tauri-apps/plugin-fs';
+import { refreshLocalUser } from '../store.ts';
+import { getAuthData } from '../store.ts';
+import { refreshAvatar } from '../store.ts';
 
 const emit = defineEmits(['close', 'updated']);
 
@@ -59,24 +62,13 @@ let unlistenHover: UnlistenFn;
 let unlistenLeave: UnlistenFn;
 
 onMounted(async () => {
-  // When files are hovered over the window
-  unlistenHover = await listen('tauri://drag-enter', () => {
-    isDragging.value = true;
-  });
-
-  unlistenLeave = await listen('tauri://drag-leave', () => {
-    isDragging.value = false;
-  });
-
-  // When files are dropped
+  unlistenHover = await listen('tauri://drag-enter', () => isDragging.value = true);
+  unlistenLeave = await listen('tauri://drag-leave', () => isDragging.value = false);
   unlistenDrag = await listen<{ paths: string[] }>('tauri://drag-drop', (event) => {
     isDragging.value = false;
     const path = event.payload.paths[0];
-    if (path && isImage(path)) {
-      setFile(path);
-    } else {
-      errorMessage.value = "Please drop a valid image file.";
-    }
+    if (path && isImage(path)) setFile(path);
+    else errorMessage.value = "Please drop a valid image file.";
   });
 });
 
@@ -84,6 +76,8 @@ onUnmounted(() => {
   if (unlistenDrag) unlistenDrag();
   if (unlistenHover) unlistenHover();
   if (unlistenLeave) unlistenLeave();
+  // Clean up
+  if (previewUrl.value) URL.revokeObjectURL(previewUrl.value);
 });
 
 async function pickFile() {
@@ -94,18 +88,30 @@ async function pickFile() {
     });
 
     if (selected && typeof selected === 'string') {
-      setFile(selected);
+      await setFile(selected);
     }
   } catch (err) {
     console.error(err);
   }
 }
 
-// Utility to set path and preview
-function setFile(path: string) {
-  selectedPath.value = path;
-  previewUrl.value = convertFileSrc(path);
-  errorMessage.value = '';
+// Async function to read file and create blob URL
+async function setFile(path: string) {
+  try {
+    selectedPath.value = path;
+
+    const contents = await readFile(path);
+    const blob = new Blob([contents]);
+
+    if (previewUrl.value) URL.revokeObjectURL(previewUrl.value);
+
+    previewUrl.value = URL.createObjectURL(blob);
+
+    errorMessage.value = '';
+  } catch (e) {
+    console.error("Error reading file:", e);
+    errorMessage.value = "Could not read image file.";
+  }
 }
 
 function isImage(path: string) {
@@ -120,17 +126,25 @@ async function handleUpload() {
   uploadProgress.value = 0;
 
   try {
-    await uploadAvatar(selectedPath.value, (progress, total) => {
+    const fileBytes = await readFile(selectedPath.value);
+
+    await uploadAvatar(fileBytes, (progress, total) => {
       uploadProgress.value = Math.round((progress / total) * 100);
     });
 
     await refreshLocalUser();
 
+    // Trigger global UI refresh
+    const auth = await getAuthData();
+    if (auth.user) {
+      refreshAvatar(auth.user.uuid);
+    }
+
     emit('updated');
     emit('close');
   } catch (err: any) {
     console.error("Upload failed:", err);
-    errorMessage.value = 'Failed to upload avatar. Please try again.';
+    errorMessage.value = err.message || 'Failed to upload avatar';
     isSubmitting.value = false;
   }
 }
@@ -254,6 +268,8 @@ async function handleUpload() {
 .error-message {
   color: var(--error);
   font-size: 0.9rem;
+  word-break: break-all;
+  overflow-wrap: anywhere;
 }
 
 .actions {

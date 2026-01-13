@@ -38,7 +38,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { updateSettings } from '../api/account'
-import { updateLocalUser } from '../authStore'
+import { updateLocalUser } from '../store'
 import type { User } from '../types'
 import { useFluent } from 'fluent-vue';
 
