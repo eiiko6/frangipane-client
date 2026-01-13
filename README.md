@@ -1,4 +1,4 @@
-# chat app frontend
+# chatapp frontend
 
 `yarn`
 

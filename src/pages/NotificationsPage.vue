@@ -11,8 +11,9 @@
           <span>{{ req.sender_username }}</span>
           <div class="actions">
             <button @click="acceptFriend(req.sender_uuid)">{{ $t('notifications-accept') }}</button>
-            <button class="decline-btn" @click="declineFriend(req.sender_uuid)">{{ $t('notifications-decline')
-            }}</button>
+            <button class="decline-btn" @click="declineFriend(req.sender_uuid)">
+              {{ $t('notifications-decline') }}
+            </button>
           </div>
         </li>
       </ul>
@@ -27,7 +28,9 @@
           <span>{{ inv.room_name }}</span>
           <span>{{ $t('notifications-invite-from', { user: inv.sender_username }) }}</span>
           <div class="actions">
-            <button @click="acceptRoom(inv.sender_uuid, inv.room_uuid)">{{ $t('notifications-join') }}</button>
+            <button @click="acceptRoom(inv.sender_uuid, inv.room_uuid)">
+              {{ $t('notifications-join') }}
+            </button>
             <button class="decline-btn" @click="declineRoom(inv.sender_uuid, inv.room_uuid)">{{
               $t('notifications-decline') }}</button>
           </div>

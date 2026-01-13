@@ -1,26 +1,26 @@
 <template>
-    <div class="room-list">
-        <header class="rooms-header">
-            <h2>{{ $t('chat-room-list-title') }}</h2>
-            <button class="create-btn" @click="showCreate = true" :title="$t('chat-create-title')">
-                <i class="fa-solid fa-plus"></i>
-            </button>
-        </header>
+  <div class="room-list">
+    <header class="rooms-header">
+      <h2>{{ $t('chat-room-list-title') }}</h2>
+      <button class="create-btn" @click="showCreate = true" :title="$t('chat-create-title')">
+        <i class="fa-solid fa-plus"></i>
+      </button>
+    </header>
 
-        <Teleport to="body">
-            <CreateRoomModal v-if="showCreate" @close="showCreate = false" @created="rooms.push($event)" />
-        </Teleport>
+    <Teleport to="body">
+      <CreateRoomModal v-if="showCreate" @close="showCreate = false" @created="rooms.push($event)" />
+    </Teleport>
 
-        <div class="scroll-area">
-            <router-link v-for="room in rooms" :key="room.uuid" :to="`/rooms/${room.uuid}`" class="btn room-item"
-                :class="{ active: route.params.uuid === room.uuid }" @click="emit('select-room')">
-                <div class="room-info">
-                    <span class="room-name">{{ room.name }}</span>
-                    <span class="room-owner">{{ $t('chat-room-owner', { owner: room.owner_name }) }}</span>
-                </div>
-            </router-link>
+    <div class="scroll-area">
+      <router-link v-for="room in rooms" :key="room.uuid" :to="`/rooms/${room.uuid}`" class="btn room-item"
+        :class="{ active: route.params.uuid === room.uuid }" @click="emit('select-room')">
+        <div class="room-info">
+          <span class="room-name">{{ room.name }}</span>
+          <span class="room-owner">{{ $t('chat-room-owner', { owner: room.owner_name }) }}</span>
         </div>
+      </router-link>
     </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -37,94 +37,94 @@ const rooms = ref<Room[]>([]);
 const emit = defineEmits(['select-room']);
 
 onMounted(async () => {
-    rooms.value = await fetchRooms();
+  rooms.value = await fetchRooms();
 });
 </script>
 
 <style scoped>
 .room-list {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    user-select: none;
-    -webkit-user-select: none;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .rooms-header {
-    padding: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--border);
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
 }
 
 .rooms-header h2 {
-    /* font-size: 1rem; */
-    margin: 0;
-    margin-left: 45px;
+  /* font-size: 1rem; */
+  margin: 0;
+  margin-left: 45px;
 }
 
 .scroll-area {
-    flex: 1;
-    overflow-y: auto;
-    padding: 0.5rem;
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem;
 }
 
 .room-item {
-    display: block;
-    padding: 0.75rem 1rem;
-    margin-bottom: 0.25rem;
-    border-radius: 8px;
-    text-decoration: none;
-    color: var(--muted);
-    transition: all 0.2s;
+  display: block;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.25rem;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--muted);
+  transition: all 0.2s;
 }
 
 .room-item:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: var(--text);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
 }
 
 .room-item.active {
-    /* border: 1px solid var(--border); */
-    background: var(--panel-accent);
-    color: var(--accent);
+  /* border: 1px solid var(--border); */
+  background: var(--panel-accent);
+  color: var(--accent);
 }
 
 .room-item.active .room-owner {
-    color: var(--text);
+  color: var(--text);
 }
 
 .room-info {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .room-name {
-    font-weight: 500;
+  font-weight: 500;
 }
 
 .room-owner {
-    font-size: 0.75rem;
-    opacity: 0.6;
+  font-size: 0.75rem;
+  opacity: 0.6;
 }
 
 .create-btn {
-    margin: 0;
-    padding: 18px;
-    width: 28px;
-    height: 28px;
-    border-radius: var(--radius);
-    border: none;
-    background: transparent;
-    color: white;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  margin: 0;
+  padding: 18px;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius);
+  border: none;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .create-btn:hover {
-    background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.05);
 }
 </style>
