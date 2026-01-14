@@ -50,3 +50,7 @@ export interface RoomInvite {
   sender_uuid: string
   sender_username: string
 }
+
+export interface VersionResponse {
+    version: string
+}

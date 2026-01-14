@@ -83,6 +83,11 @@ settings-updating = Updating...
 settings-error-required = Username and Email are required.
 settings-error-failed = Update failed
 
+## Warning
+warning-wrongversion-title = Wrong app version
+warning-wrongversion-message = The backend expects version {$expectedBackendVersion} while your version of the app ({$appVersion}) supports backend version {$backendVersion}. Please update to avoid potential issues.
+warning-wrongversion-dismiss = I know what I'm doing
+
 ## Shared
 shared-cancel = Cancel
 shared-error = An error occurred

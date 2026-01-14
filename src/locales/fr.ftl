@@ -81,6 +81,11 @@ settings-upload-avatar-title = Importer un avatar
 settings-error-required = Le nom d'utilisateur et l'email sont requis.
 settings-error-failed = Échec de la mise à jour
 
+## Warning
+warning-wrongversion-title = Mauvaise version de l'application
+warning-wrongversion-message = Le backend attend la version {$expectedBackendVersion} alors que votre version de l'application ({$appVersion}) prend en charge la version {$backendVersion} du backend. Veuillez mettre à jour pour éviter d'éventuels problèmes.
+warning-wrongversion-dismiss = Je sais ce que je fais
+
 ## Shared
 shared-cancel = Annuler
 shared-error = Une erreur est survenue

@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
+import packageJson from './package.json' // Import package.json
 
 // @ts-expect-error process is a nodejs global
 const host = process.env.TAURI_DEV_HOST;
@@ -31,4 +32,9 @@ export default defineConfig(async () => ({
       ignored: ["**/src-tauri/**"],
     },
   },
+
+  define: {
+    '__APP_VERSION__': JSON.stringify(packageJson.version),
+    '__BACKEND_VERSION__': JSON.stringify(packageJson.backendVersion)
+  }
 }));

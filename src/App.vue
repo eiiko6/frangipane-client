@@ -4,6 +4,9 @@
       <router-view />
     </main>
 
+    <VersionWarningModal v-if="showVersionWarningModal" :appVersion="appVersion" :backendVersion="backendVersion"
+      :expectedBackendVersion="expectedBackendVersion" @close="showVersionWarningModal = false" />
+
     <footer v-if="!$route.meta.hideNavbar">
       <Navbar />
     </footer>
@@ -11,7 +14,28 @@
 </template>
 
 <script setup lang="ts">
-import Navbar from './components/Navbar.vue';
+import { onMounted, ref } from 'vue'
+import Navbar from './components/Navbar.vue'
+import VersionWarningModal from './components/VersionWarningModal.vue'
+import { apiFetch } from './api/client'
+import { VersionResponse } from './types'
+
+const showVersionWarningModal = ref(false)
+const backendVersion = ref('')
+
+const appVersion = __APP_VERSION__
+const expectedBackendVersion = __BACKEND_VERSION__
+
+onMounted(async () => {
+  backendVersion.value = (await getBackendVersion()).version
+  if (backendVersion.value !== expectedBackendVersion) {
+    showVersionWarningModal.value = true
+  }
+})
+
+async function getBackendVersion() {
+  return await apiFetch<VersionResponse>('/version')
+}
 </script>
 
 <style scoped>
