@@ -1,7 +1,7 @@
 {
-  "name": "chatapp",
+  "name": "frangipane-client",
   "private": true,
-  "version": "1.0.3",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",

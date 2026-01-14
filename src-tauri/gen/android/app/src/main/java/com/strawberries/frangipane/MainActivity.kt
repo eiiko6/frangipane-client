@@ -1,4 +1,4 @@
-package com.strawberries.chatapp
+package com.strawberries.frangipane
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge

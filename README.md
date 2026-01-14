@@ -1,4 +1,4 @@
-# chatapp frontend
+# Frangpiane client
 
 `yarn`
 

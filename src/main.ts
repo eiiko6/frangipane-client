@@ -30,7 +30,7 @@ init()
 
 // export const API = 'http://127.0.0.1:8080'
 export const API = 'http://192.168.1.183:8080'
-// export const API = 'https://alatreon.org/chatapp'
+// export const API = 'https://alatreon.org/frangipane'
 // export const API_WS = 'ws://127.0.0.1:8080/ws'
 export const API_WS = 'ws://192.168.1.183:8080/ws'
-// export const API_WS = 'wss://alatreon.org/chatapp/ws'
+// export const API_WS = 'wss://alatreon.org/frangipane/ws'

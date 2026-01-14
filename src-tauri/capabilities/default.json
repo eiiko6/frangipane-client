@@ -19,7 +19,7 @@
           "url": "http://192.168.1.183:*"
         },
         {
-          "url": "https://alatreon.org/chatapp/*"
+          "url": "https://alatreon.org/frangipane/*"
         }
       ],
       "deny": []
@@ -34,7 +34,7 @@
           "url": "http://192.168.1.183:*"
         },
         {
-          "url": "wss://alatreon.org/chatapp/*"
+          "url": "wss://alatreon.org/frangipane/*"
         }
       ]
     },
