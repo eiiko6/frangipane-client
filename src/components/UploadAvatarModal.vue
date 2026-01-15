@@ -46,6 +46,9 @@ import { readFile } from '@tauri-apps/plugin-fs';
 import { refreshLocalUser } from '../store.ts';
 import { getAuthData } from '../store.ts';
 import { refreshAvatar } from '../store.ts';
+import { useFluent } from 'fluent-vue';
+
+const { $t } = useFluent();
 
 const emit = defineEmits(['close', 'updated']);
 
@@ -110,7 +113,7 @@ async function setFile(path: string) {
     errorMessage.value = '';
   } catch (e) {
     console.error("Error reading file:", e);
-    errorMessage.value = "Could not read image file.";
+    errorMessage.value = $t('settings-error-upload-avatar-failed-read')
   }
 }
 
@@ -144,7 +147,7 @@ async function handleUpload() {
     emit('close');
   } catch (err: any) {
     console.error("Upload failed:", err);
-    errorMessage.value = err.message || 'Failed to upload avatar';
+    errorMessage.value = $t('settings-error-upload-avatar-failed-upload');
     isSubmitting.value = false;
   }
 }

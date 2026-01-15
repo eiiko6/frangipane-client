@@ -32,12 +32,15 @@ chat-invite-friend-too = Also send a friend request
 chat-invite-send = Send
 chat-invite-username-placeholder = username
 chat-room-list-title = Rooms
+chat-room-list-connecting = Connecting...
 chat-room-owner = by {$owner}
 chat-create-title = Create room
 chat-create-name = Room name
 chat-create-name-placeholder = room name
 chat-create-global = Global room
 chat-create-submit = Create
+chat-connecting = Connecting to room...
+chat-connecting-failed = Could not connect. Check internet connection.
 
 ## Friends page
 friends-title = Your friends
@@ -82,6 +85,8 @@ settings-update-save = Save Changes
 settings-updating = Updating...
 settings-error-required = Username and Email are required.
 settings-error-failed = Update failed
+settings-error-upload-avatar-failed-read = Failed to read image
+settings-error-upload-avatar-failed-upload = Failed to upload image
 
 ## Warning
 warning-wrongversion-title = Wrong app version

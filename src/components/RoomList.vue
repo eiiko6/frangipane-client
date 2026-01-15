@@ -1,4 +1,8 @@
 <template>
+  <Teleport to="body">
+    <CreateRoomModal v-if="showCreate" @close="showCreate = false" @created="rooms.push($event)" />
+  </Teleport>
+
   <div class="room-list">
     <header class="rooms-header">
       <h2>{{ $t('chat-room-list-title') }}</h2>
@@ -7,9 +11,12 @@
       </button>
     </header>
 
-    <Teleport to="body">
-      <CreateRoomModal v-if="showCreate" @close="showCreate = false" @created="rooms.push($event)" />
-    </Teleport>
+    <div class="wait-container" v-if="!rooms || rooms.length === 0">
+        <p class="wait-msg">{{ $t('chat-room-list-connecting') }}</p>
+        <button class="retry-btn" @click="refreshRooms()">
+          <i class="fa-solid fa-rotate-right"></i>
+        </button>
+    </div>
 
     <div class="scroll-area">
       <router-link v-for="room in rooms" :key="room.uuid" :to="`/rooms/${room.uuid}`" class="btn room-item"
@@ -36,6 +43,10 @@ const rooms = ref<Room[]>([]);
 
 const emit = defineEmits(['select-room']);
 
+async function refreshRooms() {
+    rooms.value = await fetchRooms();
+}
+
 onMounted(async () => {
   rooms.value = await fetchRooms();
 });
@@ -43,11 +54,43 @@ onMounted(async () => {
 
 <style scoped>
 .room-list {
+  position: relative;
   display: flex;
   flex-direction: column;
   height: 100%;
   user-select: none;
   -webkit-user-select: none;
+}
+
+.wait-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+}
+
+.wait-msg {
+  color: var(--muted);
+  font-size: 1.1rem;
+  z-index: 5;
+  pointer-events: none;
+  text-align: center;
+}
+
+.retry-btn {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.retry-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .rooms-header {

@@ -32,12 +32,15 @@ chat-invite-friend-too = Envoyer aussi une demande d'ami
 chat-invite-send = Envoyer
 chat-invite-username-placeholder = nom d'utilisateur
 chat-room-list-title = Salons
+chat-room-list-connecting = Connexion...
 chat-room-owner = par {$owner}
 chat-create-title = Créer un salon
 chat-create-name = Nom du salon
 chat-create-name-placeholder = nom du salon
 chat-create-global = Salon public
 chat-create-submit = Créer
+chat-connecting = Connexion au salon...
+chat-connecting-failed = Impossible d'établir la connexion. Vérifiez votre internet.
 
 ## Friends page
 friends-title = Vos amis
@@ -80,6 +83,8 @@ settings-upload-avatar-btn = Importer un avatar
 settings-upload-avatar-title = Importer un avatar
 settings-error-required = Le nom d'utilisateur et l'email sont requis.
 settings-error-failed = Échec de la mise à jour
+settings-error-upload-avatar-failed-read = Erreur de lecture de l'image
+settings-error-upload-avatar-failed-upload = Erreur d'envoi de l'image
 
 ## Warning
 warning-wrongversion-title = Mauvaise version de l'application

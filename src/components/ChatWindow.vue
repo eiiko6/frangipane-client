@@ -1,5 +1,6 @@
 <template>
-  <InvitePeopleModal v-if="showInviteModal" :room_uuid=props.uuid @close="showInviteModal = false" />
+  <InvitePeopleModal v-if="showInviteModal && isSocketConnected" :room_uuid=props.uuid
+    @close="showInviteModal = false" />
 
   <div v-if="uuid === 'none'" class="no-room">
     <div class="empty-state">
@@ -12,8 +13,10 @@
     <h2 class="room-name">{{ currentRoom?.name }}</h2>
 
     <div class="messages-container" ref="messageListRef" @scroll="handleScroll">
-      <MessageList :messages="messages" />
+      <MessageList v-if="isSocketConnected" :messages="messages" />
     </div>
+
+    <p v-if="!isSocketConnected" class="wait-msg">{{ $t('chat-connecting') }}</p>
 
     <div class="input-container">
       <button v-if="isOwner && !currentRoom?.global" class="invite-btn" @click="showInviteModal = true"
@@ -21,7 +24,14 @@
         <i class="fa-solid fa-users"></i>
       </button>
 
-      <MessageInput ref="messageInputRef" @send="onSend" />
+      <div v-if="connectionError" class="connection-error">
+        <p>{{ connectionError }}</p>
+        <button class="retry-btn" @click="initializeRoom">
+          <i class="fa-solid fa-rotate-right"></i>
+        </button>
+      </div>
+
+      <MessageInput v-if="isSocketConnected" ref="messageInputRef" @send="onSend" />
     </div>
   </div>
 </template>
@@ -37,37 +47,71 @@ import InvitePeopleModal from './InvitePeopleModal.vue';
 import WebSocket from '@tauri-apps/plugin-websocket';
 import { getAuthData } from "../store.ts";
 import { fetchRoomInfo } from "../api/rooms.ts";
+import { useFluent } from 'fluent-vue';
+
+const { $t } = useFluent();
 
 const props = defineProps<{ uuid: string }>();
+
+// UI State
 const messages = ref<Message[]>([]);
 const messageListRef = ref<HTMLElement | null>(null);
 const messageInputRef = ref<InstanceType<typeof MessageInput> | null>(null);
 const currentUser = ref<User | null>(null);
 const currentRoom = ref<Room | null>(null);
+const connectionError = ref<string | null>(null);
 
 // Pagination State
 const isLoadingMore = ref(false);
-const hasMore = ref(true); // Assume there are more until API returns empty
+const hasMore = ref(true);
 const showInviteModal = ref(false);
+
+// WebSocket State
 let socket: WebSocket | null = null;
+const isSocketConnected = ref(false);
+let unlistenSocket: (() => void) | null = null;
 
 const isOwner = computed(() => {
   if (!currentUser.value || !currentRoom.value) return false;
   return currentUser.value.uuid === currentRoom.value.owner_uuid;
 });
 
+// Detaches listeners and attempts to close the socket.
+async function cleanupWebSocket() {
+  isSocketConnected.value = false;
+
+  if (unlistenSocket) {
+    unlistenSocket();
+    unlistenSocket = null;
+  }
+
+  if (socket) {
+    const tempSocket = socket;
+    socket = null;
+
+    try {
+      await tempSocket.disconnect();
+    } catch (err) {
+      console.warn("Socket cleanup warning (non-fatal):", err);
+    }
+  }
+}
+
 async function initializeRoom() {
-  if (socket) { await socket.disconnect(); socket = null; }
+  await cleanupWebSocket();
 
   messages.value = [];
-  hasMore.value = true;
   currentRoom.value = null;
+  hasMore.value = true;
+  connectionError.value = null;
+
+  isSocketConnected.value = false;
 
   if (props.uuid === 'none') return;
 
   try {
     const [msgs, roomInfo, auth] = await Promise.all([
-      fetchMessages(props.uuid, undefined, 40), // Load first 40
+      fetchMessages(props.uuid, undefined, 40),
       fetchRoomInfo(props.uuid),
       getAuthData()
     ]);
@@ -80,21 +124,45 @@ async function initializeRoom() {
     await nextTick();
     scrollToBottom();
 
+    await connectWebSocket();
+
+  } catch (err) {
+    console.error("Room initialization failed:", err);
+    connectionError.value = $t('chat-connecting-failed');
+  }
+}
+
+async function connectWebSocket() {
+  try {
     const wsToken = await getWsToken(props.uuid);
     const url = `${API_WS}/rooms/${props.uuid}?token=${wsToken}`;
+
     socket = await WebSocket.connect(url);
 
-    socket.addListener((msg) => {
+    isSocketConnected.value = true;
+
+    unlistenSocket = socket.addListener((msg) => {
       if (msg.type === 'Text') {
-        const data: Message = JSON.parse(msg.data);
-        if (!messages.value.some(m => m.uuid === data.uuid)) {
-          messages.value.push(data);
-          nextTick().then(scrollToBottomIfAtEnd);
+        try {
+          const data: Message = JSON.parse(msg.data);
+
+          // if (props.uuid !== 'none' && data.room_uuid && data.room_uuid !== props.uuid) {
+          //   return;
+          // }
+
+          if (!messages.value.some(m => m.uuid === data.uuid)) {
+            messages.value.push(data);
+            nextTick().then(scrollToBottomIfAtEnd);
+          }
+        } catch (e) {
+          console.error("Error parsing message:", e);
         }
       }
     });
   } catch (err) {
-    console.error("Room initialization failed:", err);
+    console.error("WS Connect failed:", err);
+    isSocketConnected.value = false;
+    connectionError.value = "Live chat disconnected.";
   }
 }
 
@@ -102,7 +170,6 @@ async function handleScroll() {
   const el = messageListRef.value;
   if (!el) return;
 
-  // If user scrolls to the top, is not already loading, and there's more data
   if (el.scrollTop < 50 && !isLoadingMore.value && hasMore.value) {
     await loadMore();
   }
@@ -122,7 +189,6 @@ async function loadMore() {
       return;
     }
 
-    // Capture height before adding messages to maintain scroll position
     const el = messageListRef.value;
     const previousScrollHeight = el?.scrollHeight || 0;
 
@@ -130,7 +196,6 @@ async function loadMore() {
 
     await nextTick();
 
-    // Restore scroll position so the view doesn't jump
     if (el) {
       el.scrollTop = el.scrollHeight - previousScrollHeight;
     }
@@ -149,7 +214,6 @@ function scrollToBottom() {
   }
 }
 
-// Only scroll to bottom for new messages if the user is already near the bottom
 function scrollToBottomIfAtEnd() {
   const el = messageListRef.value;
   if (!el) return;
@@ -157,8 +221,6 @@ function scrollToBottomIfAtEnd() {
   const isAtBottom = el.scrollHeight - el.scrollTop - el.clientHeight < threshold;
   if (isAtBottom) scrollToBottom();
 }
-
-
 
 const handleGlobalKeyDown = (event: KeyboardEvent) => {
   if (event.key === 'Enter') {
@@ -176,8 +238,11 @@ async function onSend(content: string) {
   await sendMessage(props.uuid, content);
 }
 
-watch(() => props.uuid, () => {
-  initializeRoom();
+// Watch for room changes
+watch(() => props.uuid, (newUuid, oldUuid) => {
+  if (newUuid !== oldUuid) {
+    initializeRoom();
+  }
 });
 
 onMounted(() => {
@@ -186,15 +251,14 @@ onMounted(() => {
 });
 
 onUnmounted(async () => {
-  if (socket) {
-    await socket.disconnect();
-  }
   window.removeEventListener('keydown', handleGlobalKeyDown);
+  await cleanupWebSocket();
 });
 </script>
 
 <style scoped>
 .chat-container {
+  position: relative;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -205,6 +269,19 @@ onUnmounted(async () => {
   overflow-y: auto;
   padding: 1.5rem;
   scroll-behavior: auto;
+}
+
+.wait-msg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  color: var(--muted);
+  font-size: 1.1rem;
+  z-index: 10;
+  pointer-events: none;
+  text-align: center;
 }
 
 .input-container {
@@ -247,6 +324,23 @@ onUnmounted(async () => {
   justify-content: center;
 }
 
+.connection-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 10px;
+}
+
+.retry-btn {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.retry-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
 
 .no-room {
   height: 100%;
