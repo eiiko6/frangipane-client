@@ -4,10 +4,10 @@ import { ref, computed } from 'vue'
 import { fetchFriendRequests } from './api/friends'
 import { fetchRoomInvites } from './api/rooms'
 import type { FriendRequest, RoomInvite } from './types'
-import { getAvatar } from './api/account'
 import { load, Store } from '@tauri-apps/plugin-store'
 import { UpdateUserResponse } from './types'
 import { reactive } from 'vue'
+import { API } from './main'
 
 let store: Store | null = null
 export const initAuth = getAuthData
@@ -164,6 +164,11 @@ export function useNotifications() {
 
 // A reactive object to store the last updated timestamp for each user
 const avatarTimestamps = reactive<Record<string, number>>({})
+
+
+export function getAvatar(uuid: string): string {
+  return `${API}/account/get-avatar/${uuid}`;
+}
 
 // Generates the avatar URL with a timestamp
 export function getAvatarUrl(uuid: string | undefined | null) {

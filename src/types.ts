@@ -27,6 +27,7 @@ export interface Room {
 
 export interface Message {
   uuid: string
+  room_uuid: string
   sender: string
   sender_uuid: string
   message_type: 'text'
@@ -52,5 +53,5 @@ export interface RoomInvite {
 }
 
 export interface VersionResponse {
-    version: string
+  version: string
 }

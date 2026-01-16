@@ -6,14 +6,14 @@
 
     <aside class="sidebar" :class="{ 'is-open': isSidebarOpen }">
       <div class="sidebar-content">
-        <RoomList @select-room="handleRoomSelection" />
+        <RoomList ref="roomListRef" @select-room="handleRoomSelection" />
       </div>
     </aside>
 
     <div v-if="isSidebarOpen" class="sidebar-overlay" @click="isSidebarOpen = false"></div>
 
     <main class="chat-window-container" :class="{ 'sidebar-is-open': isSidebarOpen }">
-      <ChatWindow :uuid="uuid" />
+      <ChatWindow :uuid="uuid" @notification="handleNotification" />
     </main>
   </div>
 </template>
@@ -26,9 +26,17 @@ import ChatWindow from "../components/ChatWindow.vue";
 defineProps<{ uuid: string }>();
 const isSidebarOpen = ref(true);
 
+const roomListRef = ref<InstanceType<typeof RoomList> | null>(null);
+
 const handleRoomSelection = () => {
   if (window.innerWidth <= 720) {
     isSidebarOpen.value = false;
+  }
+};
+
+const handleNotification = (roomUuid: string) => {
+  if (roomListRef.value) {
+    roomListRef.value.incrementUnread(roomUuid);
   }
 };
 </script>

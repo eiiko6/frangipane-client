@@ -19,7 +19,7 @@ export function sendMessage(roomUuid: string, content: string) {
   })
 }
 
-export async function getWsToken(roomUuid: string): Promise<string> {
-  const data = await apiFetch<{ token: string }>(`/ws/issue-token/rooms/${roomUuid}`);
-  return data.token;
+export async function getWsToken(): Promise<string> {
+  const res = await apiFetch<{ token: string }>(`/ws/messages/issue-token`);
+  return res.token;
 }

@@ -48,7 +48,3 @@ export async function uploadAvatar(
     xhr.send(fileData);
   });
 }
-
-export function getAvatar(uuid: string): string {
-  return `${API}/account/get-avatar/${uuid}`;
-}

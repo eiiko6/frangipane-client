@@ -12,18 +12,23 @@
     </header>
 
     <div class="wait-container" v-if="!rooms || rooms.length === 0">
-        <p class="wait-msg">{{ $t('chat-room-list-connecting') }}</p>
-        <button class="retry-btn" @click="refreshRooms()">
-          <i class="fa-solid fa-rotate-right"></i>
-        </button>
+      <p class="wait-msg">{{ $t('chat-room-list-connecting') }}</p>
+      <button class="retry-btn" @click="refreshRooms()">
+        <i class="fa-solid fa-rotate-right"></i>
+      </button>
     </div>
 
     <div class="scroll-area">
       <router-link v-for="room in rooms" :key="room.uuid" :to="`/rooms/${room.uuid}`" class="btn room-item"
         :class="{ active: route.params.uuid === room.uuid }" @click="emit('select-room')">
-        <div class="room-info">
-          <span class="room-name">{{ room.name }}</span>
-          <span class="room-owner">{{ $t('chat-room-owner', { owner: room.owner_name }) }}</span>
+        <div class="room-content-wrapper">
+          <div class="room-info">
+            <span class="room-name">{{ room.name }}</span>
+            <span class="room-owner">{{ $t('chat-room-owner', { owner: room.owner_name }) }}</span>
+          </div>
+          <div v-if="unreadCounts[room.uuid] && unreadCounts[room.uuid] > 0" class="unread-badge">
+            {{ unreadCounts[room.uuid] > 99 ? '99+' : unreadCounts[room.uuid] }}
+          </div>
         </div>
       </router-link>
     </div>
@@ -31,21 +36,42 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { fetchRooms } from '../api/rooms';
 import type { Room } from '../types';
 import CreateRoomModal from './CreateRoomModal.vue';
 
+const emit = defineEmits(['select-room']);
+
 const route = useRoute();
 const showCreate = ref(false);
 const rooms = ref<Room[]>([]);
+const unreadCounts = ref<Record<string, number>>({});
 
-const emit = defineEmits(['select-room']);
 
 async function refreshRooms() {
-    rooms.value = await fetchRooms();
+  rooms.value = await fetchRooms();
 }
+
+const incrementUnread = (roomUuid: string) => {
+  if (route.params.uuid === roomUuid) return;
+
+  const current = unreadCounts.value[roomUuid] || 0;
+  unreadCounts.value[roomUuid] = current + 1;
+};
+
+defineExpose({ incrementUnread });
+
+watch(
+  () => route.params.uuid,
+  (newUuid) => {
+    if (typeof newUuid === 'string') {
+      unreadCounts.value[newUuid] = 0;
+    }
+  },
+  { immediate: true }
+);
 
 onMounted(async () => {
   rooms.value = await fetchRooms();
@@ -91,6 +117,29 @@ onMounted(async () => {
 
 .retry-btn:hover {
   background: rgba(255, 255, 255, 0.05);
+}
+
+.room-content-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.unread-badge {
+  background-color: var(--accent);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: bold;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+  margin-left: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .rooms-header {
