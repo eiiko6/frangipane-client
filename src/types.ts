@@ -23,6 +23,7 @@ export interface Room {
   owner_uuid: string
   name: string
   global: boolean
+  unread_count: number
 }
 
 export interface Message {

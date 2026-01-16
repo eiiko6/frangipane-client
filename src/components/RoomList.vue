@@ -49,9 +49,20 @@ const showCreate = ref(false);
 const rooms = ref<Room[]>([]);
 const unreadCounts = ref<Record<string, number>>({});
 
-
 async function refreshRooms() {
-  rooms.value = await fetchRooms();
+  const fetchedRooms = await fetchRooms();
+  rooms.value = fetchedRooms;
+
+  fetchedRooms.forEach(room => {
+    console.log(`Unread count for room ${room.name}: ${room.unread_count}`);
+
+    // If the room isn't the currently active one, store the count
+    if (room.unread_count && route.params.uuid !== room.uuid) {
+      unreadCounts.value[room.uuid] = room.unread_count;
+    } else {
+      unreadCounts.value[room.uuid] = 0;
+    }
+  });
 }
 
 const incrementUnread = (roomUuid: string) => {
@@ -74,7 +85,8 @@ watch(
 );
 
 onMounted(async () => {
-  rooms.value = await fetchRooms();
+  // rooms.value = await fetchRooms();
+  await refreshRooms()
 });
 </script>
 
@@ -128,18 +140,17 @@ onMounted(async () => {
 
 .unread-badge {
   background-color: var(--accent);
-  color: white;
+  color: black;
   font-size: 0.75rem;
   font-weight: bold;
   min-width: 20px;
   height: 20px;
-  border-radius: 10px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 6px;
+  padding: 0;
   margin-left: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .rooms-header {
