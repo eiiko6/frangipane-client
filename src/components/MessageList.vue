@@ -2,7 +2,7 @@
   <ul>
     <li v-for="(m, i) in messages" :key="i" class="message" :class="{ 'is-me': m.sender_uuid === currentUserUuid }">
       <div class="sender-info">
-        <img :src="getAvatarUrl(m.sender_uuid)" @error="handleAvatarError" class="sender-avatar" />
+        <img :src="getAvatarUrl(m.sender_uuid)" @error="handleAvatarError" class="avatar" />
         <div class="sender">{{ m.sender }}</div>
         <span class="timestamp">{{ m.sent_at }}</span>
       </div>
@@ -72,15 +72,6 @@ ul {
   /* background-color: rgba(255, 255, 255, 0.02); */
   width: 100%;
   padding: 5px 18px;
-}
-
-.sender-avatar {
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 1px solid var(--border);
-  flex-shrink: 0;
 }
 
 .message.is-me {

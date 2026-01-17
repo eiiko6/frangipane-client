@@ -11,14 +11,18 @@
       </button>
     </header>
 
-    <div class="wait-container" v-if="!rooms || rooms.length === 0">
+    <div class="wait-container" v-if="isLoading">
       <p class="wait-msg">{{ $t('chat-room-list-connecting') }}</p>
+    </div>
+
+    <div class="wait-container" v-else-if="!rooms || rooms.length === 0">
+      <p class="wait-msg">{{ $t('chat-room-list-empty') }}</p>
       <button class="retry-btn" @click="refreshRooms()">
         <i class="fa-solid fa-rotate-right"></i>
       </button>
     </div>
 
-    <div class="scroll-area">
+    <div class="scroll-area" v-else>
       <router-link v-for="room in rooms" :key="room.uuid" :to="`/rooms/${room.uuid}`" class="btn room-item"
         :class="{ active: route.params.uuid === room.uuid }" @click="emit('select-room')">
         <div class="room-content-wrapper">
@@ -48,21 +52,27 @@ const route = useRoute();
 const showCreate = ref(false);
 const rooms = ref<Room[]>([]);
 const unreadCounts = ref<Record<string, number>>({});
+const isLoading = ref(true);
 
 async function refreshRooms() {
-  const fetchedRooms = await fetchRooms();
-  rooms.value = fetchedRooms;
+  isLoading.value = true;
 
-  fetchedRooms.forEach(room => {
-    console.log(`Unread count for room ${room.name}: ${room.unread_count}`);
+  try {
+    const fetchedRooms = await fetchRooms();
+    rooms.value = fetchedRooms;
 
-    // If the room isn't the currently active one, store the count
-    if (room.unread_count && route.params.uuid !== room.uuid) {
-      unreadCounts.value[room.uuid] = room.unread_count;
-    } else {
-      unreadCounts.value[room.uuid] = 0;
-    }
-  });
+    fetchedRooms.forEach(room => {
+      if (room.unread_count && route.params.uuid !== room.uuid) {
+        unreadCounts.value[room.uuid] = room.unread_count;
+      } else {
+        unreadCounts.value[room.uuid] = 0;
+      }
+    });
+  } catch (error) {
+    console.error("Failed to refresh rooms", error);
+  } finally {
+    isLoading.value = false;
+  }
 }
 
 const incrementUnread = (roomUuid: string) => {
@@ -72,7 +82,7 @@ const incrementUnread = (roomUuid: string) => {
   unreadCounts.value[roomUuid] = current + 1;
 };
 
-defineExpose({ incrementUnread });
+defineExpose({ incrementUnread, refreshRooms });
 
 watch(
   () => route.params.uuid,
@@ -85,7 +95,6 @@ watch(
 );
 
 onMounted(async () => {
-  // rooms.value = await fetchRooms();
   await refreshRooms()
 });
 </script>
@@ -111,6 +120,7 @@ onMounted(async () => {
   left: 50%;
   transform: translate(-50%, -50%);
   margin: 0;
+  width: 100%;
 }
 
 .wait-msg {
@@ -162,7 +172,6 @@ onMounted(async () => {
 }
 
 .rooms-header h2 {
-  /* font-size: 1rem; */
   margin: 0;
   margin-left: 45px;
 }
@@ -189,7 +198,6 @@ onMounted(async () => {
 }
 
 .room-item.active {
-  /* border: 1px solid var(--border); */
   background: var(--panel-accent);
   color: var(--accent);
 }

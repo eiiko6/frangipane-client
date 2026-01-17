@@ -24,6 +24,7 @@ body,
   --muted: #9aa0aa;
   --accent: #f27aa3;
   --accent-hover: #ff91b3;
+  --accent-second: #96CDFB;
   --border: #2a2f3b;
   --error: #ff5050;
   --radius: 8px;
@@ -172,6 +173,15 @@ i:hover {
 
 .modal {
   margin: 30px;
+}
+
+.avatar {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
 }
 
 @media (hover: hover) {

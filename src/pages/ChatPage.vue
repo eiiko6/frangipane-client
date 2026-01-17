@@ -13,25 +13,37 @@
     <div v-if="isSidebarOpen" class="sidebar-overlay" @click="isSidebarOpen = false"></div>
 
     <main class="chat-window-container" :class="{ 'sidebar-is-open': isSidebarOpen }">
-      <ChatWindow :uuid="uuid" @notification="handleNotification" />
+      <ChatWindow :uuid="safeUuid" @notification="handleNotification" @room-action="handleRoomAction" />
     </main>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import RoomList from "../components/RoomList.vue";
 import ChatWindow from "../components/ChatWindow.vue";
 
-defineProps<{ uuid: string }>();
-const isSidebarOpen = ref(true);
+const props = defineProps<{ uuid?: string }>();
+const router = useRouter();
 
+const isSidebarOpen = ref(true);
 const roomListRef = ref<InstanceType<typeof RoomList> | null>(null);
+
+const safeUuid = computed(() => props.uuid || 'none');
 
 const handleRoomSelection = () => {
   if (window.innerWidth <= 720) {
     isSidebarOpen.value = false;
   }
+};
+
+const handleRoomAction = async () => {
+  if (roomListRef.value) {
+    await roomListRef.value.refreshRooms();
+  }
+
+  router.push('/rooms/none'); 
 };
 
 const handleNotification = (roomUuid: string) => {

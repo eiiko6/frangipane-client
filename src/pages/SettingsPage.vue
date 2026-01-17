@@ -64,10 +64,6 @@ const handleAvatarError = (event: Event) => {
   img.src = defaultAvatar;
 };
 
-async function handleAvatarUpdated() {
-  await fetchUserData()
-}
-
 const showAvatarModal = ref(false)
 
 const router = useRouter()

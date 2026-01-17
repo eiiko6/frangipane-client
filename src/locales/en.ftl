@@ -25,6 +25,7 @@ auth-error-email-invalid = Please enter a valid email address
 
 ## Chat page
 chat-no-room = Select a room to start talking
+chat-no-messages = No messages yet. Say hi!
 chat-input-placeholder = type a message
 chat-invite-title = Invite People
 chat-invite-receiver = Receiver username
@@ -32,8 +33,16 @@ chat-invite-friend-too = Also send a friend request
 chat-invite-send = Send
 chat-invite-username-placeholder = username
 chat-room-list-title = Rooms
+chat-room-list-empty = No rooms found
 chat-room-list-connecting = Connecting...
 chat-room-owner = by {$owner}
+chat-room-global = Global room
+chat-room-members = Members
+chat-room-actions-leave = Leave Room
+chat-room-actions-leave-confirm = Are you sure you want to leave this room?
+chat-room-actions-delete = Delete Room
+chat-room-actions-delete-confirm = Are you sure you want to delete this room? This cannot be undone.
+chat-room-actions-ownership = Transfer Ownership
 chat-create-title = Create room
 chat-create-name = Room name
 chat-create-name-placeholder = room name
@@ -95,6 +104,9 @@ warning-wrongversion-dismiss = I know what I'm doing
 
 ## Shared
 shared-cancel = Cancel
+shared-close = Close
 shared-error = An error occurred
 shared-save = Save
 shared-updating = Updating
+shared-delete = Delete
+shared-leave = Leave

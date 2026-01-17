@@ -1,39 +1,55 @@
 <template>
-  <InvitePeopleModal v-if="showInviteModal && isSocketConnected" :room_uuid="props.uuid"
-    @close="showInviteModal = false" />
+    <InvitePeopleModal v-if="showInviteModal && isSocketConnected" :room_uuid="props.uuid"
+        @close="showInviteModal = false" @room-changed="handleRoomChanged" />
 
-  <div v-if="uuid === 'none'" class="no-room">
-    <div class="empty-state">
-      <i class="fa-solid fa-comments"></i>
-      <p>{{ $t('chat-no-room') }}</p>
-    </div>
-  </div>
+    <RoomDetailsModal v-if="showDetailsModal && isSocketConnected" :roomUuid="props.uuid"
+        :roomName="currentRoom?.name || 'Unknown room'" :isGlobal="currentRoom?.global || false"
+        @close="showDetailsModal = false" @room-changed="handleRoomChanged" />
 
-  <div v-else class="chat-container">
-    <h2 class="room-name">{{ currentRoom?.name }}</h2>
-
-    <div class="messages-container" ref="messageListRef" @scroll="handleScroll">
-      <MessageList v-if="messages.length > 0 || isSocketConnected" :messages="messages" />
+    <div v-if="uuid === 'none'" class="no-room">
+        <div class="empty-state">
+            <i class="fa-solid fa-comments"></i>
+            <p>{{ $t('chat-no-room') }}</p>
+        </div>
     </div>
 
-    <p v-if="messages.length === 0" class="wait-msg">{{ $t('chat-connecting') }}</p>
+    <div v-else class="chat-container">
+        <button class="room-name" @click="showDetailsModal = true">{{ currentRoom?.name }}</button>
 
-    <div class="input-container">
-      <button v-if="isOwner && !currentRoom?.global" class="invite-btn" @click="showInviteModal = true"
-        :title="$t('chat-invite-title')">
-        <i class="fa-solid fa-users"></i>
-      </button>
+        <div class="messages-container" ref="messageListRef" @scroll="handleScroll">
+            <MessageList v-if="messages.length > 0 || isSocketConnected" :messages="messages" />
+        </div>
 
-      <div v-if="connectionError" class="connection-error">
-        <p>{{ connectionError }}</p>
-        <button class="retry-btn" @click="retryConnection">
-          <i class="fa-solid fa-rotate-right"></i>
-        </button>
-      </div>
+        <div v-if="messages.length == 0" class="center-status-container">
+            <p v-if="isInitialLoad" class="wait-msg">{{ $t('chat-connecting') }}</p>
 
-      <MessageInput v-if="isSocketConnected" ref="messageInputRef" @send="onSend" />
+            <div v-else-if="connectionError" class="wait-msg">
+                <p>{{ $t('chat-connecting-failed') }}</p>
+
+                <button class="retry-btn" @click="retryConnection">
+                    <i class="fa-solid fa-rotate-right"></i>
+                </button>
+            </div>
+
+            <div v-else-if="!connectionError && isSocketConnected" class="empty-room-state">
+                <i class="fa-regular fa-paper-plane"></i>
+                <p>{{ $t('chat-no-messages') }}</p>
+            </div>
+        </div>
+
+        <div v-if="isSocketConnected" class="input-container">
+            <button v-if="isOwner && !currentRoom?.global" class="invite-btn" @click="showInviteModal = true"
+                :title="$t('chat-invite-title')">
+                <i class="fa-solid fa-users"></i>
+            </button>
+
+            <div v-if="connectionError" class="connection-error">
+                <p>{{ connectionError }}</p>
+            </div>
+
+            <MessageInput v-if="isSocketConnected" ref="messageInputRef" @send="onSend" />
+        </div>
     </div>
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -45,6 +61,7 @@ import { apiFetch } from '../api/client';
 import MessageList from "./MessageList.vue";
 import MessageInput from "./MessageInput.vue";
 import InvitePeopleModal from './InvitePeopleModal.vue';
+import RoomDetailsModal from "./RoomDetailsModal.vue";
 import WebSocket from '@tauri-apps/plugin-websocket';
 import { getAuthData } from "../store.ts";
 import { fetchRoomInfo } from "../api/rooms.ts";
@@ -53,9 +70,10 @@ import { useFluent } from 'fluent-vue';
 const { $t } = useFluent();
 
 const emit = defineEmits<{
-  // (e: 'send', content: string): void
-  (e: 'notification', roomUuid: string): void
+    (e: 'notification', roomUuid: string): void
+    (e: 'room-action'): void
 }>();
+
 
 const props = defineProps<{ uuid: string }>();
 
@@ -71,6 +89,8 @@ const connectionError = ref<string | null>(null);
 const isLoadingMore = ref(false);
 const hasMore = ref(true);
 const showInviteModal = ref(false);
+const showDetailsModal = ref(false);
+const isInitialLoad = ref(false);
 
 // WebSocket State
 let socket: WebSocket | null = null;
@@ -78,297 +98,355 @@ const isSocketConnected = ref(false);
 let unlistenSocket: (() => void) | null = null;
 
 const isOwner = computed(() => {
-  if (!currentUser.value || !currentRoom.value) return false;
-  return currentUser.value.uuid === currentRoom.value.owner_uuid;
+    if (!currentUser.value || !currentRoom.value) return false;
+    return currentUser.value.uuid === currentRoom.value.owner_uuid;
 });
 
+const handleRoomChanged = () => {
+    showDetailsModal.value = false;
+    emit('room-action');
+};
+
 onMounted(async () => {
-  await connectGlobalWebSocket();
+    await connectGlobalWebSocket();
 
-  await loadRoomData();
+    await loadRoomData();
 
-  window.addEventListener('keydown', handleGlobalKeyDown);
+    window.addEventListener('keydown', handleGlobalKeyDown);
 });
 
 onUnmounted(async () => {
-  window.removeEventListener('keydown', handleGlobalKeyDown);
-  await cleanupWebSocket();
+    window.removeEventListener('keydown', handleGlobalKeyDown);
+    await cleanupWebSocket();
 });
 
 // Watch for room switches.
 watch(() => props.uuid, async (newUuid, oldUuid) => {
-  if (newUuid !== oldUuid) {
-    await loadRoomData();
-  }
+    if (newUuid !== oldUuid) {
+        await loadRoomData();
+    }
 });
 
 async function retryConnection() {
-  await cleanupWebSocket();
-  await connectGlobalWebSocket();
-  await loadRoomData();
+    await cleanupWebSocket();
+    await connectGlobalWebSocket();
+    await loadRoomData();
 }
 
 async function loadRoomData() {
-  messages.value = [];
-  currentRoom.value = null;
-  hasMore.value = true;
-  connectionError.value = null;
+    isInitialLoad.value = true;
+    messages.value = [];
+    currentRoom.value = null;
+    hasMore.value = true;
 
-  if (props.uuid === 'none') return;
+    if (props.uuid === 'none') {
+        isInitialLoad.value = false;
+        return;
+    }
 
-  try {
-    const [msgs, roomInfo, auth] = await Promise.all([
-      fetchMessages(props.uuid, undefined, 40),
-      fetchRoomInfo(props.uuid),
-      getAuthData()
-    ]);
+    try {
+        const [msgs, roomInfo, auth] = await Promise.all([
+            fetchMessages(props.uuid, undefined, 40),
+            fetchRoomInfo(props.uuid),
+            getAuthData()
+        ]);
 
-    messages.value = msgs;
-    currentRoom.value = roomInfo;
-    currentUser.value = auth.user;
-    if (msgs.length < 40) hasMore.value = false;
+        messages.value = msgs;
+        currentRoom.value = roomInfo;
+        currentUser.value = auth.user;
+        if (msgs.length < 40) hasMore.value = false;
 
-    await nextTick();
-    scrollToBottom();
-  } catch (err) {
-    console.error("Room data load failed:", err);
-  }
+        await nextTick();
+        scrollToBottom();
+    } catch (err) {
+        console.error("Room data load failed:", err);
+    } finally {
+        isInitialLoad.value = false;
+    }
 }
 
 async function connectGlobalWebSocket() {
-  if (isSocketConnected.value) return;
+    if (isSocketConnected.value) return;
 
-  try {
-    // Get a one-time token for the connection
-    const res = await apiFetch<{ token: string }>('/ws/messages/issue-token');
-    const wsToken = res.token;
+    try {
+        // Get a one-time token for the connection
+        const res = await apiFetch<{ token: string }>('/ws/messages/issue-token');
+        const wsToken = res.token;
 
-    const url = `${API_WS}/messages?token=${wsToken}`;
-    socket = await WebSocket.connect(url);
+        const url = `${API_WS}/messages?token=${wsToken}`;
+        socket = await WebSocket.connect(url);
 
-    isSocketConnected.value = true;
-    connectionError.value = null;
+        isSocketConnected.value = true;
+        connectionError.value = null;
 
-    unlistenSocket = socket.addListener((msg) => {
-      if (msg.type === 'Text') {
-        try {
-          const data: Message = JSON.parse(msg.data);
+        unlistenSocket = socket.addListener((msg) => {
+            if (msg.type === 'Text') {
+                try {
+                    const data: Message = JSON.parse(msg.data);
 
-          // Filter messages for the currenty open room
-          if (data.room_uuid === props.uuid) {
-            // Deduplicate
-            if (!messages.value.some(m => m.uuid === data.uuid)) {
-              messages.value.push(data);
-              nextTick().then(scrollToBottomIfAtEnd);
+                    // Filter messages for the currenty open room
+                    if (data.room_uuid === props.uuid) {
+                        // Deduplicate
+                        if (!messages.value.some(m => m.uuid === data.uuid)) {
+                            messages.value.push(data);
+                            nextTick().then(scrollToBottomIfAtEnd);
+                        }
+                    } else {
+                        // Notifications for other rooms
+                        emit('notification', data.room_uuid);
+                    }
+
+                } catch (e) {
+                    console.error("Error parsing message:", e);
+                }
+            } else if (msg.type === 'Close') {
+                isSocketConnected.value = false;
             }
-          } else {
-            // Notifications for other rooms
-            emit('notification', data.room_uuid);
-          }
+        });
 
-        } catch (e) {
-          console.error("Error parsing message:", e);
-        }
-      } else if (msg.type === 'Close') {
+    } catch (err) {
+        console.error("WS Connect failed:", err);
         isSocketConnected.value = false;
-      }
-    });
-
-  } catch (err) {
-    console.error("WS Connect failed:", err);
-    isSocketConnected.value = false;
-    connectionError.value = "Live chat disconnected.";
-  }
+        connectionError.value = $t('shared-error');
+    }
 }
 
 async function cleanupWebSocket() {
-  isSocketConnected.value = false;
+    isSocketConnected.value = false;
 
-  if (unlistenSocket) {
-    unlistenSocket();
-    unlistenSocket = null;
-  }
-
-  if (socket) {
-    const tempSocket = socket;
-    socket = null;
-    try {
-      await tempSocket.disconnect();
-    } catch (err) {
-      console.warn("Socket cleanup warning:", err);
+    if (unlistenSocket) {
+        unlistenSocket();
+        unlistenSocket = null;
     }
-  }
+
+    if (socket) {
+        const tempSocket = socket;
+        socket = null;
+        try {
+            await tempSocket.disconnect();
+        } catch (err) {
+            console.warn("Socket cleanup warning:", err);
+        }
+    }
 }
 
 async function handleScroll() {
-  const el = messageListRef.value;
-  if (!el) return;
+    const el = messageListRef.value;
+    if (!el) return;
 
-  if (el.scrollTop < 50 && !isLoadingMore.value && hasMore.value) {
-    await loadMore();
-  }
+    if (el.scrollTop < 50 && !isLoadingMore.value && hasMore.value) {
+        await loadMore();
+    }
 }
 
 async function loadMore() {
-  if (messages.value.length === 0) return;
+    if (messages.value.length === 0) return;
 
-  isLoadingMore.value = true;
-  const oldestMsgUuid = messages.value[0].uuid;
+    isLoadingMore.value = true;
+    const oldestMsgUuid = messages.value[0].uuid;
 
-  try {
-    const olderMsgs = await fetchMessages(props.uuid, oldestMsgUuid, 30);
+    try {
+        const olderMsgs = await fetchMessages(props.uuid, oldestMsgUuid, 30);
 
-    if (olderMsgs.length === 0) {
-      hasMore.value = false;
-      return;
+        if (olderMsgs.length === 0) {
+            hasMore.value = false;
+            return;
+        }
+
+        const el = messageListRef.value;
+        const previousScrollHeight = el?.scrollHeight || 0;
+
+        messages.value = [...olderMsgs, ...messages.value];
+
+        await nextTick();
+
+        if (el) {
+            el.scrollTop = el.scrollHeight - previousScrollHeight;
+        }
+
+        if (olderMsgs.length < 30) hasMore.value = false;
+    } catch (err) {
+        console.error("Failed to load more messages:", err);
+    } finally {
+        isLoadingMore.value = false;
     }
-
-    const el = messageListRef.value;
-    const previousScrollHeight = el?.scrollHeight || 0;
-
-    messages.value = [...olderMsgs, ...messages.value];
-
-    await nextTick();
-
-    if (el) {
-      el.scrollTop = el.scrollHeight - previousScrollHeight;
-    }
-
-    if (olderMsgs.length < 30) hasMore.value = false;
-  } catch (err) {
-    console.error("Failed to load more messages:", err);
-  } finally {
-    isLoadingMore.value = false;
-  }
 }
 
 function scrollToBottom() {
-  if (messageListRef.value) {
-    messageListRef.value.scrollTop = messageListRef.value.scrollHeight;
-  }
+    if (messageListRef.value) {
+        messageListRef.value.scrollTop = messageListRef.value.scrollHeight;
+    }
 }
 
 function scrollToBottomIfAtEnd() {
-  const el = messageListRef.value;
-  if (!el) return;
-  const threshold = 150;
-  const isAtBottom = el.scrollHeight - el.scrollTop - el.clientHeight < threshold;
-  if (isAtBottom) scrollToBottom();
+    const el = messageListRef.value;
+    if (!el) return;
+    const threshold = 150;
+    const isAtBottom = el.scrollHeight - el.scrollTop - el.clientHeight < threshold;
+    if (isAtBottom) scrollToBottom();
 }
 
 const handleGlobalKeyDown = (event: KeyboardEvent) => {
-  if (event.key === 'Enter') {
-    const active = document.activeElement?.tagName.toLowerCase();
-    const isTyping = active === 'input' || active === 'textarea';
-    if (!isTyping && messageInputRef.value) {
-      event.preventDefault();
-      messageInputRef.value.focus();
+    if (event.key === 'Enter') {
+        const active = document.activeElement?.tagName.toLowerCase();
+        const isTyping = active === 'input' || active === 'textarea';
+        if (!isTyping && messageInputRef.value) {
+            event.preventDefault();
+            messageInputRef.value.focus();
+        }
     }
-  }
 };
 
 async function onSend(content: string) {
-  if (props.uuid === 'none') return;
-  await sendMessage(props.uuid, content);
+    if (props.uuid === 'none') return;
+    await sendMessage(props.uuid, content);
 }
 </script>
 
 <style scoped>
 .chat-container {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .messages-container {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1.5rem;
-  scroll-behavior: auto;
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+    scroll-behavior: auto;
 }
 
 .wait-msg {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  margin: 0;
-  color: var(--muted);
-  font-size: 1.1rem;
-  z-index: 10;
-  pointer-events: none;
-  text-align: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    color: var(--muted);
+    font-size: 1.1rem;
+    z-index: 10;
+    pointer-events: none;
+    text-align: center;
 }
 
 .input-container {
-  display: flex;
-  gap: 10px;
-  align-items: flex-end;
-  padding: 10px;
-  border-top: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    padding: 10px;
+    border-top: 1px solid var(--border);
 }
 
 :deep(.input-container > *:last-child) {
-  flex: 1;
+    flex: 1;
 }
 
 .room-name {
-  margin: 15px 0;
-  text-align: center;
+    border-radius: var(--radius);
+    border: none;
+    background: transparent;
+    color: white;
+    cursor: pointer;
+
+    font-size: 1.6rem;
+    font-weight: bold;
+    margin: 15px 0;
+    text-align: center;
 }
 
 .invite-btn {
-  margin: 0;
-  padding: 18px;
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius);
-  border: none;
-  background: transparent;
-  color: white;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    margin: 0;
+    padding: 18px;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius);
+    border: none;
+    background: transparent;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .connection-error {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 10px;
 }
 
 .retry-btn {
-  background: transparent;
-  color: var(--text);
-  border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
 }
 
 .retry-btn:hover {
-  background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .no-room {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--muted);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
 }
 
 .empty-state {
-  text-align: center;
-  font-size: 1.2rem;
-  user-select: none;
-  -webkit-user-select: none;
+    text-align: center;
+    font-size: 1.2rem;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .empty-state i {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-  opacity: 0.3;
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+}
+
+.center-status-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    pointer-events: none;
+    text-align: center;
+    width: 100%;
+}
+
+.wait-msg {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.6rem;
+    margin: 0;
+    color: var(--muted);
+    font-size: 1.1rem;
+}
+
+.empty-room-state {
+    color: var(--muted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    opacity: 0.7;
+}
+
+.empty-room-state i {
+    font-size: 2rem;
+}
+
+.empty-room-state p {
+    margin: 0;
+    font-size: 1rem;
 }
 </style>

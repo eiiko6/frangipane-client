@@ -25,8 +25,10 @@ auth-error-email-invalid = Veuillez entrer une adresse email valide
 
 ## Chat page
 chat-no-room = Sélectionnez un salon pour commencer à discuter
+chat-no-messages = Pas encore de messages. Dites bonjour !
 chat-input-placeholder = tapez un message
 chat-invite-title = Inviter des gens
+chat-room-list-empty = Aucun salon trouvé
 chat-invite-receiver = Nom du destinataire
 chat-invite-friend-too = Envoyer aussi une demande d'ami
 chat-invite-send = Envoyer
@@ -34,6 +36,13 @@ chat-invite-username-placeholder = nom d'utilisateur
 chat-room-list-title = Salons
 chat-room-list-connecting = Connexion...
 chat-room-owner = par {$owner}
+chat-room-global = Salon global
+chat-room-members = Membres
+chat-room-actions-leave = Quitter le Salon
+chat-room-actions-leave-confirm = Voulez-vous vraiment quitter ce salon?
+chat-room-actions-delete = Supprimer le Salon
+chat-room-actions-delete-confirm = Voulez-vous vraiment supprimer ce salon? C'est irréversible.
+chat-room-actions-ownership = Transférer la Propriété
 chat-create-title = Créer un salon
 chat-create-name = Nom du salon
 chat-create-name-placeholder = nom du salon
@@ -93,6 +102,9 @@ warning-wrongversion-dismiss = Je sais ce que je fais
 
 ## Shared
 shared-cancel = Annuler
+shared-close = Fermer
 shared-error = Une erreur est survenue
 shared-save = Enregistrer
 shared-updating = Mise à jour...
+shared-delete = Supprimer
+shared-leave = Quitter
