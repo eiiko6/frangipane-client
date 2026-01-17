@@ -8,22 +8,22 @@ import './base.css'
 import { getLocalePreference } from './store.ts'
 
 async function init() {
-  await validateToken()
+    await validateToken()
 
-  const app = createApp(App)
-  app.use(router)
-  app.use(fluent)
+    const app = createApp(App)
+    app.use(router)
+    app.use(fluent)
 
-  const savedLocale = await getLocalePreference();
-  const osLocale = navigator.language;
+    const savedLocale = await getLocalePreference();
+    const osLocale = navigator.language;
 
-  if (savedLocale) {
-    setLanguage(savedLocale);
-  } else {
-    setLanguage(osLocale);
-  }
+    if (savedLocale) {
+        setLanguage(savedLocale);
+    } else {
+        setLanguage(osLocale);
+    }
 
-  app.mount('#app')
+    app.mount('#app')
 }
 
 init()

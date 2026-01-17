@@ -64,6 +64,10 @@ let unlistenDrag: UnlistenFn;
 let unlistenHover: UnlistenFn;
 let unlistenLeave: UnlistenFn;
 
+function uiLog(message: string) {
+  errorMessage.value += (errorMessage.value ? '\n' : '') + message;
+}
+
 onMounted(async () => {
   unlistenHover = await listen('tauri://drag-enter', () => isDragging.value = true);
   unlistenLeave = await listen('tauri://drag-leave', () => isDragging.value = false);
@@ -83,20 +87,35 @@ onUnmounted(() => {
   if (previewUrl.value) URL.revokeObjectURL(previewUrl.value);
 });
 
+
 async function pickFile() {
+  errorMessage.value = '';
+  // uiLog('[pickFile] called');
+
   try {
     const selected = await open({
       multiple: false,
       filters: [{ name: 'Image', extensions: ['png', 'jpeg', 'jpg', 'webp'] }]
     });
 
-    if (selected && typeof selected === 'string') {
-      await setFile(selected);
+    // uiLog('[pickFile] dialog returned: ' + JSON.stringify(selected));
+
+    if (!selected) {
+      uiLog('No file selected (null)');
+      return;
     }
-  } catch (err) {
-    console.error(err);
+
+    if (typeof selected !== 'string') {
+      uiLog('Unexpected return type');
+      return;
+    }
+
+    await setFile(selected);
+  } catch (err: any) {
+    uiLog('Error: ' + (err?.message ?? String(err)));
   }
 }
+
 
 // Async function to read file and create blob URL
 async function setFile(path: string) {

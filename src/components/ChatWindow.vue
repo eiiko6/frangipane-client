@@ -3,7 +3,7 @@
         @close="showInviteModal = false" @room-changed="handleRoomChanged" />
 
     <RoomDetailsModal v-if="showDetailsModal && isSocketConnected" :roomUuid="props.uuid"
-        :roomName="currentRoom?.name || 'Unknown room'" :isGlobal="currentRoom?.global || false"
+        :roomName="currentRoom?.name || 'Unknown room'" :isGlobal="currentRoom?.global || false" :ownerUuid="currentRoom?.owner_uuid || ''"
         @close="showDetailsModal = false" @room-changed="handleRoomChanged" />
 
     <div v-if="uuid === 'none'" class="no-room">

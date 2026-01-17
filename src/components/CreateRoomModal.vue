@@ -8,10 +8,12 @@
         <input v-model="name" :placeholder="$t('chat-create-name-placeholder')" autofocus />
       </div>
 
+      <!--
       <label class="checkbox">
         <input type="checkbox" v-model="global" />
         <span>{{ $t('chat-create-global') }}</span>
       </label>
+      -->
 
       <div class="actions">
         <button type="button" @click="emit('close')" class="secondary">
