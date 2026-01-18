@@ -1,5 +1,5 @@
 <template>
-  <ul>
+  <ul :class="{ 'is-compact': isCompact }">
     <li v-for="(m, i) in messages" :key="i" class="message" :class="{ 'is-me': m.sender_uuid === currentUserUuid }">
       <div class="sender-info">
         <img :src="getAvatarUrl(m.sender_uuid)" @error="handleAvatarError" class="avatar" />
@@ -14,19 +14,21 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import type { Message } from '../types'
-import { getAvatarUrl } from '../store.ts'
+import { getAvatarUrl, getCompactLayoutPreference } from '../store.ts'
 import defaultAvatar from '../assets/default-avatar.png'
 import { getAuthData } from '../store.ts';
 
 defineProps<{ messages: Message[] }>()
 
 const currentUserUuid = ref<string | null>(null)
+const isCompact = ref(false)
 
 onMounted(async () => {
   const auth = await getAuthData()
   if (auth.user) {
     currentUserUuid.value = auth.user.uuid
   }
+  isCompact.value = await getCompactLayoutPreference()
 })
 
 const handleAvatarError = (event: Event) => {
@@ -50,14 +52,12 @@ ul {
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  /* gap: 0.5rem; */
-  background: var(--panel-accent);
   padding: 0;
   max-width: 80%;
   width: fit-content;
   align-self: flex-start;
-  /* border: 1px solid var(--border); */
   border-radius: var(--radius);
+  background: var(--panel-accent);
 }
 
 .sender-info {
@@ -66,12 +66,25 @@ ul {
   justify-content: flex-start;
   align-items: center;
   gap: 0.7rem;
-  /* border: 1px solid var(--border); */
   border-bottom: 1px solid var(--border);
-  /* border-radius: var(--radius) var(--radius) 0 0; */
-  /* background-color: rgba(255, 255, 255, 0.02); */
   width: 100%;
   padding: 5px 18px;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.message-content {
+  padding: 10px;
+  padding-left: 1rem;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  max-width: 100%;
+  display: block;
 }
 
 .message.is-me {
@@ -87,27 +100,38 @@ ul {
 .message.is-me .message-content {
   text-align: right;
   padding-right: 1rem;
-  padding-left: 10px;
+}
+
+/* --- Compact layout overrides --- */
+
+ul.is-compact .message {
+  background: transparent;
+  max-width: 90%;
+}
+
+ul.is-compact .sender-info {
+  border-bottom: none;
+  padding: 5px 18px 0 18px;
+}
+
+ul.is-compact .message-content {
+  padding: 5px 10px 10px 50px;
+}
+
+ul.is-compact .message.is-me .message-content {
+  padding-right: 50px;
+  padding-left: 0;
+  text-align: right;
 }
 
 .sender {
   font-weight: bold;
   font-size: 1.1rem;
-  /* flex: 1; */
 }
 
 .timestamp {
   font-weight: normal;
   opacity: 0.7;
   font-size: 0.7rem;
-}
-
-.message-content {
-  padding: 10px;
-  padding-left: 1rem;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  max-width: 100%;
-  display: block;
 }
 </style>

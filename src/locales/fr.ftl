@@ -80,6 +80,7 @@ settings-title = Paramètres
 settings-account = Compte
 settings-language = Langue
 settings-appearance = Apparence
+settings-compact-layout = Utiliser la disposition compacte
 settings-label-username = Nom d'utilisateur :
 settings-label-email = Email :
 settings-update-btn = Modifier

@@ -46,6 +46,13 @@
       </button>
     </div>
 
+    <div class="setting-checkbox">
+      <label class="checkbox-label">
+        <input type="checkbox" v-model="useCompactLayout" @change="toggleCompactLayout" />
+        <span>{{ $t('settings-compact-layout') || 'Use Compact Layout' }} (WIP)</span>
+      </label>
+    </div>
+
     <button class="logout-btn" @click="logout">
       <i class="fa-solid fa-right-from-bracket"></i>
       <span>{{ $t('settings-logout-btn') }}</span>
@@ -59,6 +66,7 @@ import { useRouter } from 'vue-router'
 import { logout as authLogout } from '../store.ts'
 import { saveThemePreference, getThemePreference } from "../store.ts"
 import { getAuthData } from "../store.ts"
+import { saveCompactLayoutPreference, getCompactLayoutPreference } from "../store.ts"
 import type { User } from "../types"
 import UpdateAccountModal from '../components/UpdateAccountModal.vue'
 import { useFluent } from 'fluent-vue'
@@ -69,22 +77,25 @@ import defaultAvatar from '../assets/default-avatar.png'
 import { getAvatarUrl } from '../store.ts'
 import { getAvailableThemes } from '../themeLoader';
 
-const handleAvatarError = (event: Event) => {
-  const img = event.target as HTMLImageElement;
-  img.src = defaultAvatar;
-};
+const { $t } = useFluent()
 
 const showAvatarModal = ref(false)
 
 const router = useRouter()
+const availableThemes = getAvailableThemes();
+
 const user = ref<User | null>(null)
 const showUpdateModal = ref(false)
-const { $t } = useFluent()
 const currentLang = ref('')
 
 const languages = computed(() => getSupportedLanguagesMetadata())
 const currentTheme = ref('default');
-const availableThemes = getAvailableThemes();
+const useCompactLayout = ref(false)
+
+const handleAvatarError = (event: Event) => {
+  const img = event.target as HTMLImageElement;
+  img.src = defaultAvatar;
+};
 
 async function fetchUserData() {
   try {
@@ -99,6 +110,7 @@ onMounted(async () => {
   const pref = await getLocalePreference()
   currentLang.value = pref || (navigator.language.split('-')[0])
   currentTheme.value = await getThemePreference()
+  useCompactLayout.value = await getCompactLayoutPreference()
 
   fetchUserData()
 })
@@ -112,6 +124,10 @@ async function changeLanguage(code: string) {
 async function changeTheme(theme: string) {
   currentTheme.value = theme
   await saveThemePreference(theme)
+}
+
+async function toggleCompactLayout() {
+  await saveCompactLayoutPreference(useCompactLayout.value)
 }
 
 function logout() {
@@ -224,6 +240,29 @@ h2 {
 .theme-btn:hover:not(.active) {
   background: rgba(var(--accent-rgb), 0.1);
   border-color: var(--accent);
+}
+
+.setting-checkbox {
+  padding: 10px;
+  margin-top: 15px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 1rem;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-label input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
 }
 
 .logout-btn {

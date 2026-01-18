@@ -1,5 +1,5 @@
 <template>
-  <div id="page">
+  <div id="page" :class="{ 'is-mobile': currentPlatform === 'android' || currentPlatform === 'ios' }">
     <div v-if="currentPlatform != 'android' && currentPlatform != 'ios'" data-tauri-drag-region class="titlebar">
       <div class="titlebar-button" @click="minimize">
         <svg width="12" height="12" viewBox="0 0 12 12">
@@ -87,7 +87,7 @@ async function getBackendVersion() {
   width: 100%;
   max-width: 1100px;
   /* padding: 2rem; */
-  padding: calc(20px + 2rem) 2rem 2rem 2rem;
+  padding: calc(20px + 1.8rem) 1.8rem calc(1.8rem - 10px) 1.8rem;
 
   flex: 1;
   overflow-y: auto;
@@ -130,17 +130,21 @@ footer {
   width: 100%;
   display: flex;
   justify-content: center;
-  padding-bottom: 24px;
+  padding-bottom: calc(1.8rem - 10px);
   background: var(--bg);
 }
 
 @media (max-width: 720px) {
   #content {
     padding: 12px;
+    padding-top: calc(30px + 10px);
+  }
+
+  .is-mobile #content {
     padding-top: 30px;
   }
 
-  footer {
+  .is-mobile footer {
     padding-bottom: 56px;
   }
 }

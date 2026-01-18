@@ -210,3 +210,16 @@ export async function applyStoredTheme() {
   const theme = await getThemePreference();
   document.documentElement.setAttribute('data-theme', theme);
 }
+
+// ==== Layout ====
+
+export async function saveCompactLayoutPreference(enabled: boolean) {
+  const s = await getStore();
+  await s.set('compact_layout', enabled);
+  await s.save();
+}
+
+export async function getCompactLayoutPreference(): Promise<boolean> {
+  const s = await getStore();
+  return (await s.get<boolean>('compact_layout')) ?? false;
+}
