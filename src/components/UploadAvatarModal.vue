@@ -202,7 +202,7 @@ async function handleUpload() {
   text-align: center;
   cursor: pointer;
   transition: all 0.2s ease;
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--panel-accent);
   min-height: 180px;
   display: flex;
   align-items: center;
@@ -221,7 +221,7 @@ async function handleUpload() {
 
 .drop-zone:hover {
   border-color: var(--accent);
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--panel-hover);
 }
 
 .drop-content i {
@@ -298,11 +298,5 @@ async function handleUpload() {
   display: flex;
   justify-content: flex-end;
   gap: 0.5rem;
-}
-
-.secondary {
-  background: transparent;
-  color: var(--text);
-  border: 1px solid var(--border);
 }
 </style>

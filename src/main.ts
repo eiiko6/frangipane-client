@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import router from './router.ts'
 import App from './App.vue'
-import { validateToken } from './store.ts'
+import { validateToken, initTheme } from './store.ts'
 import { fluent, setLanguage } from './i18n'
 
 import './base.css'
@@ -16,6 +16,8 @@ async function init() {
 
     const savedLocale = await getLocalePreference();
     const osLocale = navigator.language;
+
+    await initTheme();
 
     if (savedLocale) {
         setLanguage(savedLocale);

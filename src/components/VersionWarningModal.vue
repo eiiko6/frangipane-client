@@ -49,10 +49,4 @@ const emit = defineEmits(['close']);
   justify-content: flex-end;
   gap: 0.5rem;
 }
-
-.secondary {
-  background: transparent;
-  color: var(--text);
-  border: 1px solid var(--border);
-}
 </style>

@@ -347,7 +347,7 @@ async function onSend(content: string) {
     border-radius: var(--radius);
     border: none;
     background: transparent;
-    color: white;
+    color: var(--text);
     cursor: pointer;
 
     font-size: 1.6rem;
@@ -386,7 +386,7 @@ async function onSend(content: string) {
 }
 
 .retry-btn:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--panel-hover);
 }
 
 .no-room {

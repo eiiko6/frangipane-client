@@ -120,14 +120,4 @@ async function submit() {
   justify-content: flex-end;
   gap: 0.5rem;
 }
-
-.secondary {
-  background: transparent;
-  color: var(--text);
-  border: 1px solid var(--border);
-}
-
-.secondary:hover {
-  background: rgba(255, 255, 255, 0.05);
-}
 </style>

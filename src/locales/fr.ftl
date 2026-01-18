@@ -79,6 +79,7 @@ settings-loading = Chargement des paramètres...
 settings-title = Paramètres
 settings-account = Compte
 settings-language = Langue
+settings-appearance = Apparence
 settings-label-username = Nom d'utilisateur :
 settings-label-email = Email :
 settings-update-btn = Modifier

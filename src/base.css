@@ -16,6 +16,7 @@ body,
   overflow-y: hidden;
 }
 
+/* This is overwritten by the theme configuration */
 :root {
   --bg: #0f1116;
   --panel: #171922;
@@ -23,11 +24,16 @@ body,
   --text: #e6e6eb;
   --muted: #9aa0aa;
   --accent: #f27aa3;
+  --accent-rgb: 242, 122, 163;
   --accent-hover: #ff91b3;
   --accent-second: #96CDFB;
   --border: #2a2f3b;
   --error: #ff5050;
   --radius: 8px;
+}
+
+* {
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 body {
@@ -59,7 +65,8 @@ input:focus, textarea:focus {
 button, .button {
   font-size: 1rem;
   background: var(--accent);
-  color: #0b0d12;
+  color: var(--bg);
+  /* color: var(--btn-text); */
   border: none;
   border-radius: var(--radius);
   padding: 0.6rem 1rem;
@@ -72,6 +79,19 @@ button, .button {
 
 button:hover, .button:hover {
   background: var(--accent-hover);
+}
+
+.secondary {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 8px 16px;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.secondary:hover {
+  background: var(--panel-hover);
 }
 
 input[type="checkbox"] {

@@ -43,7 +43,7 @@ const handleRoomAction = async () => {
     await roomListRef.value.refreshRooms();
   }
 
-  router.push('/rooms/none'); 
+  router.push('/rooms/none');
 };
 
 const handleNotification = (roomUuid: string) => {
@@ -152,7 +152,7 @@ const handleNotification = (roomUuid: string) => {
   .sidebar-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.3);
+    /* background: rgba(0, 0, 0, 0.3); */
     z-index: 15;
   }
 

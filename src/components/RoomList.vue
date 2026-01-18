@@ -138,7 +138,7 @@ onMounted(async () => {
 }
 
 .retry-btn:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--panel-hover);
 }
 
 .room-content-wrapper {
@@ -150,7 +150,7 @@ onMounted(async () => {
 
 .unread-badge {
   background-color: var(--accent);
-  color: black;
+  color: var(--bg);
   font-size: 0.75rem;
   font-weight: bold;
   min-width: 20px;
@@ -193,7 +193,7 @@ onMounted(async () => {
 }
 
 .room-item:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--panel-hover);
   color: var(--text);
 }
 
@@ -236,6 +236,6 @@ onMounted(async () => {
 }
 
 .create-btn:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--panel-hover);
 }
 </style>

@@ -38,6 +38,14 @@
       </div>
     </div>
 
+    <h2>{{ $t('settings-appearance') || 'Appearance' }}</h2>
+    <div class="theme-grid">
+      <button v-for="theme in availableThemes" :key="theme.id" class="theme-btn"
+        :class="{ active: currentTheme === theme.id }" @click="changeTheme(theme.id)">
+        {{ theme.name }}
+      </button>
+    </div>
+
     <button class="logout-btn" @click="logout">
       <i class="fa-solid fa-right-from-bracket"></i>
       <span>{{ $t('settings-logout-btn') }}</span>
@@ -49,6 +57,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { logout as authLogout } from '../store.ts'
+import { saveThemePreference, getThemePreference } from "../store.ts"
 import { getAuthData } from "../store.ts"
 import type { User } from "../types"
 import UpdateAccountModal from '../components/UpdateAccountModal.vue'
@@ -58,6 +67,7 @@ import { getSupportedLanguagesMetadata, setLanguage } from '../i18n'
 import UploadAvatarModal from '../components/UploadAvatarModal.vue'
 import defaultAvatar from '../assets/default-avatar.png'
 import { getAvatarUrl } from '../store.ts'
+import { getAvailableThemes } from '../themeLoader';
 
 const handleAvatarError = (event: Event) => {
   const img = event.target as HTMLImageElement;
@@ -73,6 +83,8 @@ const { $t } = useFluent()
 const currentLang = ref('')
 
 const languages = computed(() => getSupportedLanguagesMetadata())
+const currentTheme = ref('default');
+const availableThemes = getAvailableThemes();
 
 async function fetchUserData() {
   try {
@@ -85,8 +97,8 @@ async function fetchUserData() {
 
 onMounted(async () => {
   const pref = await getLocalePreference()
-  // Synchronize the UI state with the actual active language
   currentLang.value = pref || (navigator.language.split('-')[0])
+  currentTheme.value = await getThemePreference()
 
   fetchUserData()
 })
@@ -95,6 +107,11 @@ async function changeLanguage(code: string) {
   const actual = setLanguage(code)
   currentLang.value = actual
   await saveLocalePreference(actual)
+}
+
+async function changeTheme(theme: string) {
+  currentTheme.value = theme
+  await saveThemePreference(theme)
 }
 
 function logout() {
@@ -171,9 +188,41 @@ h2 {
   margin: 0;
 }
 
+.lang-btn:hover:not(.active) {
+  background: rgba(var(--accent-rgb), 0.1);
+  border-color: var(--accent);
+}
+
 .lang-btn.active {
   background: var(--accent);
   color: #000;
+  border-color: var(--accent);
+}
+
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.theme-btn {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  margin: 0;
+  padding: 12px;
+  font-size: 0.9rem;
+}
+
+.theme-btn.active {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+}
+
+.theme-btn:hover:not(.active) {
+  background: rgba(var(--accent-rgb), 0.1);
   border-color: var(--accent);
 }
 
@@ -193,11 +242,11 @@ h2 {
 }
 
 .logout-btn:hover {
-  color: rgba(255, 80, 80, 0.8);
+  color: var(--error);
 }
 
 .logout-btn:hover i {
-  color: rgba(255, 80, 80, 0.8);
+  color: var(--error);
 }
 
 .logout-btn i {

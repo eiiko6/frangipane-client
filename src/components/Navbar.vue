@@ -76,7 +76,7 @@ onMounted(() => {
   top: 4px;
   right: 4px;
   background-color: var(--accent);
-  color: black;
+  color: var(--bg);
   font-size: 0.65rem;
   font-weight: bold;
   min-width: 18px;
@@ -92,7 +92,7 @@ onMounted(() => {
 
 @media (hover: hover) {
   .nav-item:hover {
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--panel-hover);
   }
 
   .nav-item:not(.router-link-active):hover i {

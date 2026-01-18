@@ -112,7 +112,6 @@ async function submit() {
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 }
 
 .subtitle {
@@ -153,11 +152,5 @@ async function submit() {
 button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-}
-
-.secondary {
-  background: transparent;
-  color: var(--text);
-  border: 1px solid var(--border);
 }
 </style>

@@ -205,15 +205,6 @@ const handleAvatarError = (event: Event) => {
   gap: 0.5rem;
 }
 
-.secondary {
-  background: transparent;
-  color: var(--text);
-  border: 1px solid var(--border);
-  padding: 8px 16px;
-  border-radius: var(--radius);
-  cursor: pointer;
-}
-
 .member-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));

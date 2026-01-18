@@ -1,0 +1,172 @@
+{
+  "frangipane-dark": {
+    "name": "Frangipane Dark",
+    "colors": {
+      "bg": "#0f1116",
+      "panel": "#171922",
+      "panel-accent": "#12141B",
+      "panel-hover": "#22242D",
+      "text": "#e6e6eb",
+      "muted": "#9aa0aa",
+      "accent": "#f27aa3",
+      "accent-rgb": "242, 122, 163",
+      "accent-hover": "#ff91b3",
+      "accent-second": "#96CDFB",
+      "border": "#2a2f3b",
+      "error": "#ff5050"
+    }
+  },
+  "catppuccin-latte": {
+    "name": "Catppuccin Latte",
+    "colors": {
+      "bg": "#eff1f5",
+      "panel": "#e6e9ef",
+      "panel-hover": "#bcc0cc",
+      "panel-accent": "#ccd0da",
+      "text": "#4c4f69",
+      "muted": "#7c7f93",
+      "accent": "#ea76cb",
+      "accent-rgb": "234, 118, 203",
+      "accent-hover": "#d20f39",
+      "accent-second": "#1e66f5",
+      "border": "#dce0e8",
+      "error": "#d20f39"
+    }
+  },
+  "catppuccin-frappe": {
+    "name": "Catppuccin Frappé",
+    "colors": {
+      "bg": "#303446",
+      "panel": "#292c3c",
+      "panel-accent": "#232634",
+      "panel-hover": "#414559",
+      "text": "#c6d0f5",
+      "muted": "#838ba7",
+      "accent": "#a6d189",
+      "accent-rgb": "166, 209, 137",
+      "accent-hover": "#81c8be",
+      "accent-second": "#f2d5cf",
+      "border": "#414559",
+      "error": "#e78284"
+    }
+  },
+  "catppuccin-macchiato": {
+    "name": "Catppuccin Macchiato",
+    "colors": {
+      "bg": "#24273a",
+      "panel": "#1e2030",
+      "panel-accent": "#181926",
+      "panel-hover": "#363a4f",
+      "text": "#cad3f5",
+      "muted": "#8087a2",
+      "accent": "#c6a0f6",
+      "accent-rgb": "198, 160, 246",
+      "accent-hover": "#f5bde6",
+      "accent-second": "#8aadf4",
+      "border": "#494d64",
+      "error": "#ed8796"
+    }
+  },
+  "catppuccin-mocha": {
+    "name": "Catppuccin Mocha",
+    "colors": {
+      "bg": "#1e1e2e",
+      "panel": "#181825",
+      "panel-accent": "#11111b",
+      "panel-hover": "#313244",
+      "text": "#cdd6f4",
+      "muted": "#7f849c",
+      "accent": "#89b4fa",
+      "accent-rgb": "137, 180, 250",
+      "accent-hover": "#89dceb",
+      "accent-second": "#f5c2e7",
+      "border": "#313244",
+      "error": "#f38ba8"
+    }
+  },
+  "nord": {
+    "name": "Nordic",
+    "colors": {
+      "bg": "#2e3440",
+      "panel": "#3b4252",
+      "panel-accent": "#242933",
+      "panel-hover": "#434c5e",
+      "text": "#eceff4",
+      "muted": "#d8dee9",
+      "accent": "#88c0d0",
+      "accent-rgb": "136, 192, 208",
+      "accent-hover": "#8fbcbb",
+      "accent-second": "#81a1c1",
+      "border": "#4c566a",
+      "error": "#bf616a"
+    }
+  },
+  "tokyo-night": {
+    "name": "Tokyo Night",
+    "colors": {
+      "bg": "#1a1b26",
+      "panel": "#16161e",
+      "panel-accent": "#1f2335",
+      "panel-hover": "#292e42",
+      "text": "#a9b1d6",
+      "muted": "#565f89",
+      "accent": "#7aa2f7",
+      "accent-rgb": "122, 162, 247",
+      "accent-hover": "#7dcfff",
+      "accent-second": "#bb9af7",
+      "border": "#24283b",
+      "error": "#f7768e"
+    }
+  },
+  "gruvbox-dark": {
+    "name": "Gruvbox Dark",
+    "colors": {
+      "bg": "#282828",
+      "panel": "#3c3836",
+      "panel-accent": "#282828",
+      "panel-hover": "#504945",
+      "text": "#ebdbb2",
+      "muted": "#a89984",
+      "accent": "#fabd2f",
+      "accent-rgb": "250, 189, 47",
+      "accent-hover": "#fe8019",
+      "accent-second": "#b8bb26",
+      "border": "#504945",
+      "error": "#fb4934"
+    }
+  },
+  "gruvbox-light": {
+    "name": "Gruvbox Light",
+    "colors": {
+      "bg": "#fbf1c7",
+      "panel": "#f2e5bc",
+      "panel-accent": "#d5c4a1",
+      "panel-hover": "#ebdbb2",
+      "text": "#3c3836",
+      "muted": "#7c6f64",
+      "accent": "#d65d0e",
+      "accent-rgb": "214, 93, 14",
+      "accent-hover": "#9d0006",
+      "accent-second": "#458588",
+      "border": "#bdae93",
+      "error": "#cc241d"
+    }
+  },
+  "solarized-dark": {
+    "name": "Solarized Dark",
+    "colors": {
+      "bg": "#002b36",
+      "panel": "#073642",
+      "panel-accent": "#00212b",
+      "panel-hover": "#586e75",
+      "text": "#839496",
+      "muted": "#657b83",
+      "accent": "#268bd2",
+      "accent-rgb": "38, 139, 210",
+      "accent-hover": "#2aa198",
+      "accent-second": "#859900",
+      "border": "#073642",
+      "error": "#dc322f"
+    }
+  }
+}

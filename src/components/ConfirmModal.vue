@@ -76,15 +76,6 @@ const emit = defineEmits(['yes', 'no']);
     color: var(--text);
 }
 
-.secondary {
-    cursor: pointer;
-    padding: 8px 16px;
-    border-radius: var(--radius);
-    background: transparent;
-    color: var(--text);
-    border: 1px solid var(--border);
-}
-
 .btn-danger {
     border-color: var(--error);
     color: var(--error);

@@ -182,7 +182,7 @@ async function declineRoom(senderUuid: string, roomUuid: string) {
 }
 
 .decline-btn:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: var(--panel-hover);
 }
 
 @media (max-width: 720px) {

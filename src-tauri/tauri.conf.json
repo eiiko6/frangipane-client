@@ -15,7 +15,7 @@
         "title": "frangipane",
         "width": 800,
         "height": 600,
-        "decorations": true,
+        "decorations": false,
         "resizable": true,
         "fullscreen": false,
         "center": true,

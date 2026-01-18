@@ -8,6 +8,7 @@ import { load, Store } from '@tauri-apps/plugin-store'
 import { UpdateUserResponse } from './types'
 import { reactive } from 'vue'
 import { API } from './main'
+import { applyTheme } from './themeLoader.ts';
 
 let store: Store | null = null
 export const initAuth = getAuthData
@@ -183,4 +184,29 @@ export function getAvatarUrl(uuid: string | undefined | null) {
 
 export function refreshAvatar(uuid: string) {
   avatarTimestamps[uuid] = Date.now()
+}
+
+// ==== Color themes ====
+
+export async function saveThemePreference(themeId: string) {
+  const s = await getStore();
+  await s.set('theme', themeId);
+  await s.save();
+  applyTheme(themeId);
+}
+
+export async function initTheme() {
+  const s = await getStore();
+  const themeId = (await s.get<string>('theme')) || 'default';
+  applyTheme(themeId);
+}
+
+export async function getThemePreference(): Promise<string> {
+  const s = await getStore()
+  return (await s.get<string>('theme')) ?? 'default'
+}
+
+export async function applyStoredTheme() {
+  const theme = await getThemePreference();
+  document.documentElement.setAttribute('data-theme', theme);
 }
