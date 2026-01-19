@@ -15,12 +15,16 @@
 
     <div class="friends-list">
       <h2>{{ $t('friends-list-header') }}</h2>
-      <ul>
-        <li v-for="friend in friends" :key="friend.uuid">
-          {{ friend.username }}
-        </li>
-      </ul>
+      <div class="friends">
+        <button class="friend" v-for="friend in friends" :key="friend.uuid" @click="openProfile(friend)">
+          <img :src="getAvatarUrl(friend.uuid)" @error="handleAvatarError" class="avatar" />
+          <p>{{ friend.username }}</p>
+        </button>
+      </div>
     </div>
+
+    <UserProfileModal v-if="selectedFriend" :username="selectedFriend.username" :user-uuid="selectedFriend.uuid"
+      @close="selectedFriend = null" />
   </div>
 </template>
 
@@ -28,14 +32,28 @@
 import { onMounted, ref } from 'vue'
 import { fetchFriends, sendFriendRequest } from '../api/friends'
 import type { Friend } from '../types'
+import { getAvatarUrl } from '../store'
+import defaultAvatar from '../assets/default-avatar.png'
+import UserProfileModal from '../components/UserProfileModal.vue'
 
 const friends = ref<Friend[]>([])
 const username = ref('')
 const errorMessage = ref('')
 
+const selectedFriend = ref<Friend | null>(null)
+
 onMounted(async () => {
   friends.value = await fetchFriends()
 })
+
+const openProfile = (friend: Friend) => {
+  selectedFriend.value = friend
+}
+
+const handleAvatarError = (event: Event) => {
+  const img = event.target as HTMLImageElement;
+  img.src = defaultAvatar;
+};
 
 async function send() {
   if (!username.value) {
@@ -106,21 +124,37 @@ async function send() {
   padding: 1rem;
 }
 
-.friends-list ul {
-  list-style: none;
-  padding: 0;
-}
-
-.friends-list li {
+.friend {
+  width: 100%;
+  box-sizing: border-box;
   background: var(--panel-light);
+  color: var(--text);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 0.75rem 1rem;
+  /* padding: 0.75rem 1rem; */
   margin-bottom: 0.5rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1.2rem;
+  margin: 0 0 0.5rem 0;
 }
+
+.friend:hover p {
+  text-decoration: underline;
+}
+
+/* .friend:hover { */
+/*   background-color: var(--panel-hover); */
+/* } */
 
 .friends-list h2 {
   font-size: 1.25rem;
   margin-bottom: 1rem;
+}
+
+.avatar {
+  height: 42px;
+  width: 42px;
 }
 </style>

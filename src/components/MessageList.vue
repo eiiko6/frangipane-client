@@ -2,13 +2,19 @@
   <ul :class="{ 'is-compact': isCompact }">
     <li v-for="(m, i) in messages" :key="i" class="message" :class="{ 'is-me': m.sender_uuid === currentUserUuid }">
       <div class="sender-info">
-        <img :src="getAvatarUrl(m.sender_uuid)" @error="handleAvatarError" class="avatar" />
-        <div class="sender">{{ m.sender }}</div>
+        <img :src="getAvatarUrl(m.sender_uuid)" @error="handleAvatarError" class="avatar clickable"
+          @click.stop="openUserProfile(m)" />
+        <div class="sender clickable" @click.stop="openUserProfile(m)">
+          {{ m.sender }}
+        </div>
         <span class="timestamp">{{ m.sent_at }}</span>
       </div>
       <div class="message-content">{{ m.content }}</div>
     </li>
   </ul>
+
+  <UserProfileModal v-if="selectedUser" :username="selectedUser.name" :user-uuid="selectedUser.uuid"
+    @close="selectedUser = null" />
 </template>
 
 <script setup lang="ts">
@@ -17,11 +23,14 @@ import type { Message } from '../types'
 import { getAvatarUrl, getCompactLayoutPreference } from '../store.ts'
 import defaultAvatar from '../assets/default-avatar.png'
 import { getAuthData } from '../store.ts';
+import UserProfileModal from './UserProfileModal.vue';
 
 defineProps<{ messages: Message[] }>()
 
 const currentUserUuid = ref<string | null>(null)
 const isCompact = ref(false)
+
+const selectedUser = ref<{ name: string, uuid: string } | null>(null)
 
 onMounted(async () => {
   const auth = await getAuthData()
@@ -35,6 +44,13 @@ const handleAvatarError = (event: Event) => {
   const img = event.target as HTMLImageElement;
   img.src = defaultAvatar;
 };
+
+const openUserProfile = (message: Message) => {
+  selectedUser.value = {
+    name: message.sender,
+    uuid: message.sender_uuid
+  }
+}
 </script>
 
 <style scoped>
@@ -78,9 +94,23 @@ ul {
   object-fit: cover;
 }
 
+.clickable {
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.clickable:hover {
+  opacity: 0.8;
+}
+
+.sender.clickable:hover {
+  text-decoration: underline;
+}
+
 .message-content {
   padding: 10px;
   padding-left: 1rem;
+  padding-right: 1rem;
   white-space: pre-wrap;
   word-wrap: break-word;
   max-width: 100%;
@@ -101,8 +131,6 @@ ul {
   text-align: right;
   padding-right: 1rem;
 }
-
-/* --- Compact layout overrides --- */
 
 ul.is-compact .message {
   background: transparent;

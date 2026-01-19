@@ -52,6 +52,15 @@ chat-create-submit = Create
 chat-connecting = Connecting to room...
 chat-connecting-failed = Could not connect. Check internet connection.
 
+## User profile
+profile-title = User profile
+profile-add-friend = Add Friend
+profile-remove-friend = Remove Friend
+profile-remove-friend-confirm = Are you sure you want to remove this friend?
+profile-request-sent = Request sent
+profile-username = Username
+profile-userid = User ID
+
 ## Friends page
 friends-title = Your friends
 friends-add-title = Add Friend
@@ -102,7 +111,7 @@ settings-error-upload-avatar-failed-upload = Failed to upload image
 
 ## Warning
 warning-wrongversion-title = Wrong app version
-warning-wrongversion-message = The backend expects version {$expectedBackendVersion} while your version of the app ({$appVersion}) supports backend version {$backendVersion}. Please update to avoid potential issues.
+warning-wrongversion-message = The backend expects version {$backendVersion} while your version of the app ({$appVersion}) supports backend version {$expectedBackendVersion}. Please update to avoid potential issues.
 warning-wrongversion-dismiss = I know what I'm doing
 
 ## Shared

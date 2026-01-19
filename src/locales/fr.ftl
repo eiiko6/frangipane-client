@@ -52,6 +52,15 @@ chat-create-submit = Créer
 chat-connecting = Connexion au salon...
 chat-connecting-failed = Impossible d'établir la connexion. Vérifiez votre internet.
 
+## User profile
+profile-title = Profil d'utilisateur
+profile-add-friend = Ajouter en ami
+profile-remove-friend = Retirer l'ami
+profile-remove-friend-confirm = Etes-vous sûr de vouloir retirer cet ami ?
+profile-request-sent = Requête envoyée
+profile-username = Nom d'utilisateur
+profile-userid = ID d'utilisateur
+
 ## Friends page
 friends-title = Vos amis
 friends-add-title = Ajouter un ami
@@ -100,7 +109,7 @@ settings-error-upload-avatar-failed-upload = Erreur d'envoi de l'image
 
 ## Warning
 warning-wrongversion-title = Mauvaise version de l'application
-warning-wrongversion-message = Le backend attend la version {$expectedBackendVersion} alors que votre version de l'application ({$appVersion}) prend en charge la version {$backendVersion} du backend. Veuillez mettre à jour pour éviter d'éventuels problèmes.
+warning-wrongversion-message = Le backend attend la version {$backendVersion} alors que votre version de l'application ({$appVersion}) prend en charge la version {$expectedBackendVersion} du backend. Veuillez mettre à jour pour éviter d'éventuels problèmes.
 warning-wrongversion-dismiss = Je sais ce que je fais
 
 ## Shared
