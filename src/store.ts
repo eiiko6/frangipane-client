@@ -223,3 +223,16 @@ export async function getCompactLayoutPreference(): Promise<boolean> {
   const s = await getStore();
   return (await s.get<boolean>('compact_layout')) ?? false;
 }
+
+// ==== Message draft ====
+
+export async function saveMessageDraft(text: string) {
+  const s = await getStore()
+  await s.set('message_draft', text)
+  await s.save()
+}
+
+export async function getMessageDraft(): Promise<string> {
+  const s = await getStore()
+  return (await s.get<string>('message_draft')) ?? ''
+}
