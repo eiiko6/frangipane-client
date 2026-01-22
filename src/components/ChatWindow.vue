@@ -3,8 +3,9 @@
         @close="showInviteModal = false" @room-changed="handleRoomChanged" />
 
     <RoomDetailsModal v-if="showDetailsModal && isSocketConnected" :roomUuid="props.uuid"
-        :roomName="currentRoom?.name || 'Unknown room'" :isGlobal="currentRoom?.global || false" :ownerUuid="currentRoom?.owner_uuid || ''"
-        @close="showDetailsModal = false" @room-changed="handleRoomChanged" />
+        :roomName="currentRoom?.name || 'Unknown room'" :isGlobal="currentRoom?.global || false"
+        :ownerUuid="currentRoom?.owner_uuid || ''" @close="showDetailsModal = false"
+        @room-changed="handleRoomChanged" />
 
     <div v-if="uuid === 'none'" class="no-room">
         <div class="empty-state">
@@ -66,6 +67,7 @@ import WebSocket from '@tauri-apps/plugin-websocket';
 import { getAuthData } from "../store.ts";
 import { fetchRoomInfo } from "../api/rooms.ts";
 import { useFluent } from 'fluent-vue';
+import { sendNotification } from '@tauri-apps/plugin-notification';
 
 const { $t } = useFluent();
 
@@ -194,6 +196,12 @@ async function connectGlobalWebSocket() {
                     } else {
                         // Notifications for other rooms
                         emit('notification', data.room_uuid);
+
+                        sendNotification({
+                            title: $t('notifications-message-title', { messageType: data.message_type, senderUsername: data.sender }),
+                            body: data.content,
+                            // channelId: 'messages',
+                        });
                     }
 
                 } catch (e) {

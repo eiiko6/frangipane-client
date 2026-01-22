@@ -121,3 +121,6 @@ shared-updating = Mise à jour...
 shared-delete = Supprimer
 shared-leave = Quitter
 shared-confirm = Confirmer
+
+## Notifications
+notifications-message-title = Nouveau message {$messageType} de {$senderUsername}

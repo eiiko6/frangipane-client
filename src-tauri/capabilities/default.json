@@ -54,6 +54,7 @@
         "*"
       ]
     },
-    "os:default"
+    "os:default",
+    "notification:default"
   ]
 }

@@ -123,3 +123,6 @@ shared-updating = Updating
 shared-delete = Delete
 shared-leave = Leave
 shared-confirm = Confirm
+
+## Notifications
+notifications-message-title = New {$messageType} message from {$senderUsername}
