@@ -67,6 +67,8 @@ friends-add-title = Add Friend
 friends-send-request = Send Request
 friends-list-header = Your Friends
 friends-error-required = Username is required.
+friends-connectiong = Loading friends...
+friends-list-empty = No friends found
 
 ## Notifications page
 notifications-title = Notifications
@@ -82,6 +84,8 @@ notifications-error-friend-accept = An error occurred while accepting the reques
 notifications-error-friend-decline = An error occurred while declining the request.
 notifications-error-room-accept = An error occurred while accepting the invite.
 notifications-error-room-decline = An error occurred while declining the invite.
+notifications-connectiong = Loading notifications...
+notifications-empty = No notifications found
 
 ## Settings page
 settings-loading = Loading settings...

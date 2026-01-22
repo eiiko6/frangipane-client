@@ -67,6 +67,8 @@ friends-add-title = Ajouter un ami
 friends-send-request = Envoyer
 friends-list-header = Vos Amis
 friends-error-required = Le nom d'utilisateur est requis.
+friends-connectiong = Chargement des amis...
+friends-list-empty = Pas d'amis trouvés
 
 ## Notifications page
 notifications-title = Notifications
@@ -82,6 +84,8 @@ notifications-error-friend-accept = Erreur lors de l'acceptation de la demande.
 notifications-error-friend-decline = Erreur lors du refus de la demande.
 notifications-error-room-accept = Erreur lors de l'acceptation de l'invitation.
 notifications-error-room-decline = Erreur lors du refus de l'invitation.
+notifications-connectiong = Chargement des notifications...
+notifications-empty = Pas de notifications trouvées
 
 ## Settings page
 settings-loading = Chargement des paramètres...

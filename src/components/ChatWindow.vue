@@ -335,7 +335,7 @@ async function onSend(content: string) {
     color: var(--muted);
     font-size: 1.1rem;
     z-index: 10;
-    pointer-events: none;
+    /* pointer-events: none; */
     text-align: center;
 }
 
@@ -424,7 +424,7 @@ async function onSend(content: string) {
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 10;
-    pointer-events: none;
+    /* pointer-events: none; */
     text-align: center;
     width: 100%;
 }
