@@ -44,6 +44,11 @@
                 <i class="fa-solid fa-users"></i>
             </button>
 
+            <button class="invite-btn" @click="toggleVoice" :class="{ 'active-voice': isCurrentRoomVoice }"
+                title="Join Voice Chat">
+                <i class="fa-solid" :class="isCurrentRoomVoice ? 'fa-phone-slash' : 'fa-phone'"></i>
+            </button>
+
             <div v-if="connectionError" class="connection-error">
                 <p>{{ connectionError }}</p>
             </div>
@@ -68,6 +73,7 @@ import { getAuthData } from "../store.ts";
 import { fetchRoomInfo } from "../api/rooms.ts";
 import { useFluent } from 'fluent-vue';
 import { sendNotification } from '@tauri-apps/plugin-notification';
+import { voiceActions, voiceState } from "../voice";
 
 const { $t } = useFluent();
 
@@ -108,6 +114,10 @@ const handleRoomChanged = () => {
     showDetailsModal.value = false;
     emit('room-action');
 };
+
+const isCurrentRoomVoice = computed(() => {
+    return voiceState.currentRoomUuid === props.uuid && voiceState.status === 'connected';
+});
 
 onMounted(async () => {
     await connectGlobalWebSocket();
@@ -172,7 +182,7 @@ async function connectGlobalWebSocket() {
 
     try {
         // Get a one-time token for the connection
-        const res = await apiFetch<{ token: string }>('/ws/messages/issue-token');
+        const res = await apiFetch<{ token: string }>('/ws/issue-token');
         const wsToken = res.token;
 
         const url = `${API_WS}/messages?token=${wsToken}`;
@@ -308,6 +318,14 @@ const handleGlobalKeyDown = (event: KeyboardEvent) => {
 async function onSend(content: string) {
     if (props.uuid === 'none') return;
     await sendMessage(props.uuid, content);
+}
+
+async function toggleVoice() {
+    if (isCurrentRoomVoice.value) {
+        await voiceActions.leaveRoom();
+    } else {
+        await voiceActions.joinRoom(props.uuid);
+    }
 }
 </script>
 
@@ -456,5 +474,9 @@ async function onSend(content: string) {
 .empty-room-state p {
     margin: 0;
     font-size: 1rem;
+}
+
+.active-voice {
+    color: #f87171;
 }
 </style>

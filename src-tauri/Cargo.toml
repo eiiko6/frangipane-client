@@ -30,4 +30,6 @@ tauri-plugin-dialog = "2"
 tauri-plugin-fs = "2"
 tauri-plugin-os = "2"
 tauri-plugin-notification = "2"
+cpal = { version = "0.17.1", features = ["jack"] }
+tracing = "0.1.44"
 

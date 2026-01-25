@@ -26,6 +26,8 @@
     <VersionWarningModal v-if="showVersionWarningModal" :appVersion="appVersion" :backendVersion="backendVersion"
       :expectedBackendVersion="expectedBackendVersion" @close="showVersionWarningModal = false" />
 
+    <VoiceControl />
+
     <footer v-if="!$route.meta.hideNavbar">
       <Navbar />
     </footer>
@@ -40,6 +42,7 @@ import { apiFetch } from './api/client'
 import { VersionResponse } from './types'
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { platform } from '@tauri-apps/plugin-os';
+import VoiceControl from './components/VoiceControl.vue'
 
 const currentPlatform = ref('')
 
