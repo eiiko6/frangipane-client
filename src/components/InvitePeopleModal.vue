@@ -33,8 +33,10 @@ import { ref } from 'vue'
 import { sendRoomInvite } from '../api/rooms'
 import { sendFriendRequest } from '../api/friends';
 import { useFluent } from 'fluent-vue';
+import { useErrorTranslator } from '../errors';
 
 const { $t } = useFluent();
+const { translateError } = useErrorTranslator();
 
 const props = defineProps<{ room_uuid: string }>();
 
@@ -50,10 +52,7 @@ async function submit() {
   errorMessage.value = ''
   const username = receiverUsername.value.trim()
 
-  if (!username) {
-    // errorMessage.value = 'Username is required.'
-    return
-  }
+  if (!username) return
 
   try {
     await sendRoomInvite(username, props.room_uuid)
@@ -67,7 +66,7 @@ async function submit() {
     emit('close')
 
   } catch (err: any) {
-    errorMessage.value = err?.message || err || $t('shared-error');
+    errorMessage.value = translateError(err);
   }
 }
 </script>

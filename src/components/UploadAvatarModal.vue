@@ -47,8 +47,10 @@ import { refreshLocalUser } from '../store.ts';
 import { getAuthData } from '../store.ts';
 import { refreshAvatar } from '../store.ts';
 import { useFluent } from 'fluent-vue';
+import { useErrorTranslator } from '../errors.ts';
 
 const { $t } = useFluent();
+const { translateError } = useErrorTranslator();
 
 const emit = defineEmits(['close', 'updated']);
 
@@ -166,7 +168,8 @@ async function handleUpload() {
     emit('close');
   } catch (err: any) {
     console.error("Upload failed:", err);
-    errorMessage.value = $t('settings-error-upload-avatar-failed-upload');
+    const msg = translateError(err);
+    errorMessage.value = msg !== 'An error occurred' ? msg : $t('settings-error-upload-avatar-failed-upload');
     isSubmitting.value = false;
   }
 }

@@ -47,8 +47,10 @@ import { fetchFriendRequests, acceptFriendRequest, declineFriendRequest } from '
 import { fetchRoomInvites, acceptRoomInvite, declineRoomInvite } from '../api/rooms.ts'
 import { useNotifications } from '../store'
 import { useFluent } from 'fluent-vue';
+import { useErrorTranslator } from '../errors.ts';
 
 const { $t } = useFluent();
+const { translateError } = useErrorTranslator();
 
 const errorMessage = ref('')
 const { requests, invites, refreshNotifications } = useNotifications()
@@ -65,7 +67,8 @@ async function acceptFriend(senderUuid: string) {
     requests.value = requests.value.filter(r => r.sender_uuid !== senderUuid)
     // fetchFriends().then(f => (friends.value = f))
   } catch (err) {
-    errorMessage.value = $t('notifications-error-friend-accept')
+    const msg = translateError(err);
+    errorMessage.value = msg !== $t('shared-error') ? msg : $t('notifications-error-friend-accept')
   }
 }
 
@@ -75,7 +78,8 @@ async function declineFriend(senderUuid: string) {
     requests.value = requests.value.filter(r => r.sender_uuid !== senderUuid)
     // fetchFriends().then(f => (friends.value = f))
   } catch (err) {
-    errorMessage.value = $t('notifications-error-friend-decline')
+    const msg = translateError(err);
+    errorMessage.value = msg !== $t('shared-error') ? msg : $t('notifications-error-friend-decline')
   }
 }
 
@@ -84,8 +88,8 @@ async function acceptRoom(senderUuid: string, roomUuid: string) {
     await acceptRoomInvite(senderUuid, roomUuid)
     invites.value = invites.value.filter(r => r.room_uuid !== roomUuid)
   } catch (err) {
-    errorMessage.value = $t('notifications-error-room-accept')
-    throw err
+    const msg = translateError(err);
+    errorMessage.value = msg !== $t('shared-error') ? msg : $t('notifications-error-room-accept')
   }
 }
 
@@ -94,8 +98,8 @@ async function declineRoom(senderUuid: string, roomUuid: string) {
     await declineRoomInvite(senderUuid, roomUuid)
     invites.value = invites.value.filter(r => r.room_uuid !== roomUuid)
   } catch (err) {
-    errorMessage.value = $t('notifications-error-room-decline')
-    throw err
+    const msg = translateError(err);
+    errorMessage.value = msg !== $t('shared-error') ? msg : $t('notifications-error-room-decline')
   }
 }
 </script>

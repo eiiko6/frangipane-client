@@ -41,8 +41,10 @@ import { updateSettings } from '../api/account'
 import { updateLocalUser } from '../store'
 import type { User } from '../types'
 import { useFluent } from 'fluent-vue';
+import { useErrorTranslator } from '../errors';
 
 const { $t } = useFluent();
+const { translateError } = useErrorTranslator();
 
 const props = defineProps<{ user: User | null }>()
 const emit = defineEmits(['close', 'updated'])
@@ -84,7 +86,7 @@ async function submit() {
     emit('updated')
     emit('close')
   } catch (err: any) {
-    errorMessage.value = err?.message || $t('settings-error-failed')
+    errorMessage.value = translateError(err);
   } finally {
     isSubmitting.value = false
   }

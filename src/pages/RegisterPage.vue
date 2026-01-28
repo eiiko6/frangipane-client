@@ -22,7 +22,7 @@
       <button type="submit">{{ $t('auth-register-btn') }}</button>
 
       <p class="login-link">
-        {{ $t('auth-has-settings') }} <router-link to="/login">{{ $t('auth-login-title') }}</router-link>
+        {{ $t('auth-has-account') }} <router-link to="/login">{{ $t('auth-login-title') }}</router-link>
       </p>
 
       <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
@@ -35,8 +35,10 @@ import { ref } from "vue";
 import { register } from '../store.ts'
 import { useRouter } from "vue-router";
 import { useFluent } from 'fluent-vue';
+import { useErrorTranslator } from '../errors';
 
 const { $t } = useFluent();
+const { translateError } = useErrorTranslator();
 
 const email = ref("");
 const username = ref("");
@@ -51,17 +53,15 @@ async function submit(event: Event) {
 
   const form = event.target as HTMLFormElement;
 
-  // Check password length and email
-  if (!form.checkValidity()) {
-    if (password.value.length < 8) {
-      errorMessage.value = $t('auth-error-password-length');
-    } else {
-      errorMessage.value = $t('auth-error-email-invalid');
-    }
-    return;
-  }
+  // if (!form.checkValidity()) {
+  //   if (password.value.length < 8) {
+  //     errorMessage.value = $t('auth-error-password-length');
+  //   } else {
+  //     errorMessage.value = $t('auth-error-email-invalid');
+  //   }
+  //   return;
+  // }
 
-  // Check password match
   if (password.value !== confirmPassword.value) {
     errorMessage.value = $t('auth-error-password-match');
     return;
@@ -71,7 +71,7 @@ async function submit(event: Event) {
     await register(email.value, username.value, password.value);
     router.push("/");
   } catch (err: any) {
-    errorMessage.value = err?.message || "An unknown error occurred";
+    errorMessage.value = translateError(err);
   }
 }
 </script>

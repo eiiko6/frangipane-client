@@ -18,7 +18,6 @@ auth-login-btn = Se connecter
 auth-register-btn = Créer un compte
 auth-no-account = Pas encore de compte ?
 auth-has-account = Déjà un compte ?
-auth-error-unknown = Une erreur inconnue est survenue
 auth-error-password-match = Les mots de passe ne correspondent pas
 auth-error-password-length = Le mot de passe doit faire au moins 8 caractères
 auth-error-email-invalid = Veuillez entrer une adresse email valide
@@ -128,3 +127,34 @@ shared-confirm = Confirmer
 
 ## Notifications
 notifications-message-title = Nouveau message {$messageType} de {$senderUsername}
+
+## Errors (backend)
+error-auth-invalid-credentials = Email ou mot de passe incorrect.
+error-auth-missing-token = Authentification manquante.
+error-auth-invalid-token = Session expirée ou invalide.
+error-user-not-found = Utilisateur introuvable.
+error-user-email-taken = L'adresse email est déjà utilisée.
+error-user-username-taken = Ce nom d'utilisateur est déjà pris.
+error-user-username-length = Le nom d'utilisateur doit faire 1-35 caractères.
+error-user-invalid-email = Format d'email invalide.
+error-user-password-too-short = Le mot de passe doit faire au moins 8 caractères.
+error-user-empty-fields = Des champs requis sont vides.
+error-avatar-not-found = Avatar introuvable.
+error-room-not-found = Salon introuvable.
+error-room-name-length = Le nom de la salle doit faire 1-35 caractères.
+error-room-not-member = Vous n'êtes pas membre de ce salon.
+error-room-already-member = Cette personne est déjà membre.
+error-room-owner-cannot-leave = Le propriétaire ne peut pas quitter le salon sans transférer la propriété.
+error-room-global-no-members = Impossible de lister les membres d'un salon global.
+error-invite-self = Vous ne pouvez pas vous inviter vous-même.
+error-invite-already-sent = Invitation déjà envoyée.
+error-invite-not-found = Invitation introuvable.
+error-friend-request-self = Vous ne pouvez pas vous ajouter en ami.
+error-friend-already-exists = Vous êtes déjà amis.
+error-friend-request-already-sent = Demande d'ami déjà en attente.
+error-friend-request-not-found = Demande d'ami introuvable.
+error-friend-not-found = L'utilisateur n'est pas dans votre liste d'amis.
+error-internal-server-error = Une erreur est survenue.
+error-internal-db-error = Une erreur est survenue.
+error-file-too-large = Le fichier est trop volumineux (max 2Mo).
+error-upload-failed = Erreur lors de l'envoi du fichier.

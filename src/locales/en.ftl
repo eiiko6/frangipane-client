@@ -18,7 +18,6 @@ auth-login-btn = Login
 auth-register-btn = Create Account
 auth-no-account = Don't have an account?
 auth-has-account = Already have an account?
-auth-error-unknown = An unknown error occurred
 auth-error-password-match = Passwords do not match
 auth-error-password-length = Password must be at least 8 characters long
 auth-error-email-invalid = Please enter a valid email address
@@ -130,3 +129,34 @@ shared-confirm = Confirm
 
 ## Notifications
 notifications-message-title = New {$messageType} message from {$senderUsername}
+
+## Errors (backend)
+error-auth-invalid-credentials = Invalid email or password.
+error-auth-missing-token = Authentication missing.
+error-auth-invalid-token = Session expired or invalid.
+error-user-not-found = User not found.
+error-user-email-taken = Email is already in use.
+error-user-username-taken = Username is already taken.
+error-user-username-length = Username must be 1-35 characters long.
+error-user-invalid-email = Invalid email format.
+error-user-password-too-short = Password must be at least 8 characters.
+error-user-empty-fields = Required fields are empty.
+error-avatar-not-found = Avatar not found.
+error-room-not-found = Room not found.
+error-room-name-length = Room name must be 1-35 characters long.
+error-room-not-member = You are not a member of this room.
+error-room-already-member = This person is already a member.
+error-room-owner-cannot-leave = Owner cannot leave the room without transferring ownership.
+error-room-global-no-members = Cannot list members for global rooms.
+error-invite-self = You cannot invite yourself.
+error-invite-already-sent = Invite already sent.
+error-invite-not-found = Invite not found.
+error-friend-request-self = You cannot friend request yourself.
+error-friend-already-exists = You are already friends.
+error-friend-request-already-sent = Friend request already pending.
+error-friend-request-not-found = Friend request not found.
+error-friend-not-found = User is not in your friends list.
+error-internal-server-error = An error occured.
+error-internal-db-error = An error occured.
+error-file-too-large = The file is too large (max 2MB).
+error-upload-failed = Failed to upload the file.

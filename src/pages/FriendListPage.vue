@@ -50,11 +50,14 @@ import type { Friend } from '../types'
 import { getAvatarUrl } from '../store'
 import defaultAvatar from '../assets/default-avatar.png'
 import UserProfileModal from '../components/UserProfileModal.vue'
+import { useErrorTranslator } from '../errors'
 
 const friends = ref<Friend[]>([])
 const username = ref('')
 const errorMessage = ref('')
 const isLoading = ref(true)
+
+const { translateError } = useErrorTranslator();
 
 const selectedFriend = ref<Friend | null>(null)
 
@@ -91,7 +94,7 @@ async function send() {
         errorMessage.value = ''
         await loadFriends()
     } catch (err: any) {
-        errorMessage.value = err
+        errorMessage.value = translateError(err);
     }
 }
 </script>
@@ -143,7 +146,6 @@ async function send() {
 .friends-list {
     position: relative;
     min-width: 250px;
-    min-height: 200px;
     background: var(--panel);
     border: 1px solid var(--border);
     border-radius: var(--radius);

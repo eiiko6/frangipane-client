@@ -24,6 +24,7 @@ import { ref } from "vue";
 import { login } from '../store.ts'
 import { useRouter } from "vue-router";
 import { useFluent } from 'fluent-vue';
+import { useErrorTranslator } from "../errors.ts";
 
 const email = ref("");
 const password = ref("");
@@ -32,6 +33,7 @@ const errorMessage = ref("");
 const router = useRouter();
 
 const { $t } = useFluent();
+const { translateError } = useErrorTranslator();
 
 async function submit() {
   errorMessage.value = "";
@@ -39,7 +41,8 @@ async function submit() {
     await login(email.value, "", password.value);
     router.push("/");
   } catch (err: any) {
-    errorMessage.value = err?.message || $t('auth-error-unknown');
+    errorMessage.value = translateError(err);
+    // errorMessage.value = err?.message || $t('auth-error-unknown');
   }
 }
 </script>
