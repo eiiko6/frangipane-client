@@ -7,6 +7,8 @@
         :ownerUuid="currentRoom?.owner_uuid || ''" @close="showDetailsModal = false"
         @room-changed="handleRoomChanged" />
 
+    <VoiceDeviceModal v-if="showVoiceModal" @close="showVoiceModal = false" @select="handleVoiceSelect" />
+
     <div v-if="uuid === 'none'" class="no-room">
         <div class="empty-state">
             <i class="fa-solid fa-comments"></i>
@@ -44,8 +46,7 @@
                 <i class="fa-solid fa-users"></i>
             </button>
 
-            <button class="invite-btn" @click="toggleVoice" :class="{ 'active-voice': isCurrentRoomVoice }"
-                title="Join Voice Chat">
+            <button class="invite-btn" @click="toggleVoice" :class="{ 'active-voice': isCurrentRoomVoice }">
                 <i class="fa-solid" :class="isCurrentRoomVoice ? 'fa-phone-slash' : 'fa-phone'"></i>
             </button>
 
@@ -68,6 +69,7 @@ import MessageList from "./MessageList.vue";
 import MessageInput from "./MessageInput.vue";
 import InvitePeopleModal from './InvitePeopleModal.vue';
 import RoomDetailsModal from "./RoomDetailsModal.vue";
+import VoiceDeviceModal from "./VoiceDeviceModal.vue";
 import WebSocket from '@tauri-apps/plugin-websocket';
 import { getAuthData } from "../store.ts";
 import { fetchRoomInfo } from "../api/rooms.ts";
@@ -96,9 +98,11 @@ const connectionError = ref<string | null>(null);
 // Pagination State
 const isLoadingMore = ref(false);
 const hasMore = ref(true);
+const isInitialLoad = ref(false);
+
 const showInviteModal = ref(false);
 const showDetailsModal = ref(false);
-const isInitialLoad = ref(false);
+const showVoiceModal = ref(false);
 
 // WebSocket State
 let socket: WebSocket | null = null;
@@ -324,7 +328,19 @@ async function toggleVoice() {
     if (isCurrentRoomVoice.value) {
         await voiceActions.leaveRoom();
     } else {
-        await voiceActions.joinRoom(props.uuid);
+        showVoiceModal.value = true;
+    }
+}
+
+async function handleVoiceSelect(selection: { host: string | null, device: string | null }) {
+    showVoiceModal.value = false;
+
+    if (!selection) return;
+
+    try {
+        await voiceActions.joinRoom(props.uuid, selection.host, selection.device);
+    } catch (e) {
+        console.error("Failed to join voice", e);
     }
 }
 </script>

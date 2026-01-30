@@ -50,6 +50,7 @@ chat-create-global = Salon public
 chat-create-submit = Créer
 chat-connecting = Connexion au salon...
 chat-connecting-failed = Impossible d'établir la connexion. Vérifiez votre internet.
+chat-voice-select-input = Sélectionnez un périphérique d'entrée.
 
 ## User profile
 profile-title = Profil d'utilisateur

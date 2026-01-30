@@ -48,10 +48,8 @@ const errorMessage = ref("");
 
 const router = useRouter();
 
-async function submit(event: Event) {
+async function submit() {
   errorMessage.value = "";
-
-  const form = event.target as HTMLFormElement;
 
   // if (!form.checkValidity()) {
   //   if (password.value.length < 8) {

@@ -50,6 +50,7 @@ chat-create-global = Global room
 chat-create-submit = Create
 chat-connecting = Connecting to room...
 chat-connecting-failed = Could not connect. Check internet connection.
+chat-voice-select-input = Select input device.
 
 ## User profile
 profile-title = User profile

@@ -1,5 +1,5 @@
 import { reactive } from 'vue';
-import { API_WS, logJS } from './main';
+import { API_WS } from './main';
 import { apiFetch } from './api/client';
 import WebSocket from '@tauri-apps/plugin-websocket';
 import { invoke } from '@tauri-apps/api/core';
@@ -53,34 +53,46 @@ export async function initVoiceListeners() {
 }
 
 export const voiceActions = {
-    async joinRoom(roomUuid: string) {
+    async getHosts(): Promise<string[]> {
+        try {
+            return await invoke<string[]>('get_audio_hosts');
+        } catch (e) {
+            console.error(e);
+            return [];
+        }
+    },
+
+    async getDevices(hostName: string | null): Promise<string[]> {
+        try {
+            return await invoke('get_input_devices', { hostName });
+        } catch (e) {
+            console.error(e);
+            return [];
+        }
+    },
+
+    async joinRoom(roomUuid: string, hostName: string | null, deviceName: string | null) {
         if (voiceState.status === 'connected') return;
 
         nextStartTime = 0;
         voiceState.status = 'connecting';
         voiceState.currentRoomUuid = roomUuid;
 
-        // Ensure listeners are active
         await initVoiceListeners();
 
         try {
             const res = await apiFetch<{ token: string }>('/ws/issue-token');
             const url = `${API_WS}/voice/${roomUuid}?token=${res.token}`;
-
             socket = await WebSocket.connect(url);
 
             socket.addListener((msg) => {
-                if (msg.type === 'Binary') {
-                    handleIncomingAudio(msg.data);
-                } else if (msg.type === 'Close') {
-                    voiceActions.leaveRoom();
-                }
+                if (msg.type === 'Binary') handleIncomingAudio(msg.data);
+                else if (msg.type === 'Close') voiceActions.leaveRoom();
             });
 
-            await this.startAudioCapture();
+            await this.startAudioCapture(hostName, deviceName);
             voiceState.status = 'connected';
         } catch (e) {
-            logJS(e);
             console.error("Voice join failed", e);
             voiceActions.leaveRoom();
         }
@@ -105,34 +117,25 @@ export const voiceActions = {
         voiceState.isMuted = !voiceState.isMuted;
     },
 
-    async startAudioCapture() {
+    async startAudioCapture(hostName: string | null, deviceName: string | null) {
         const hasPermission = await ensureMicrophonePermission();
-        if (!hasPermission) {
-            throw new Error("Microphone permission denied");
-        }
-        // Give the OS a moment to release the mic resource from the WebView
+        if (!hasPermission) throw new Error("Microphone permission denied");
+
         await new Promise(r => setTimeout(r, 200));
 
         audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
 
         unlistenConfig = await listen<{ sample_rate: number, channels: number }>('microphone-config', (event) => {
-            console.log("Mic Config Received:", event.payload);
             voiceState.captureSampleRate = event.payload.sample_rate;
             voiceState.captureChannels = event.payload.channels;
         });
 
         unlistenMic = await listen<number[]>('microphone-data', (event) => {
             if (voiceState.isMuted || !socket) return;
-
             socket.send(event.payload).catch(console.error);
         });
 
-        try {
-            await invoke('start_microphone');
-        } catch (e) {
-            console.error("Failed to start mic:", e);
-            throw e;
-        }
+        await invoke('start_microphone', { hostName, deviceName });
     },
 
     async stopAudioCapture() {

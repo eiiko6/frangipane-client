@@ -2,7 +2,7 @@
   "name": "frangipane-client",
   "private": true,
   "version": "1.0.2",
-  "backendVersion": "1.0.5",
+  "backendVersion": "1.0.6",
   "type": "module",
   "scripts": {
     "dev": "vite",

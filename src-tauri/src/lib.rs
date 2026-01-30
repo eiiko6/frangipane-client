@@ -1,5 +1,5 @@
 mod audio;
-use audio::{start_microphone, stop_microphone};
+use audio::{get_audio_hosts, get_input_devices, start_microphone, stop_microphone};
 
 #[tauri::command]
 fn log(message: &str) {
@@ -22,7 +22,9 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             start_microphone,
             stop_microphone,
-            log
+            log,
+            get_input_devices,
+            get_audio_hosts
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
