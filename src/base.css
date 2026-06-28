@@ -166,9 +166,13 @@ i {
   transition: color 0.2s ease;
 }
 
-i:hover {
-  color: var(--text);
+button:hover i {
+    color: var(--text);
 }
+
+/* i:hover { */
+/*   color: var(--text); */
+/* } */
 
 .btn {
   outline: none;
@@ -205,10 +209,6 @@ i:hover {
 }
 
 @media (hover: hover) {
-  i:hover {
-    color: var(--text);
-  }
-
   button:hover, .button:hover {
     background: var(--accent-hover);
   }

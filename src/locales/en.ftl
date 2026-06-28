@@ -51,6 +51,9 @@ chat-create-submit = Create
 chat-connecting = Connecting to room...
 chat-connecting-failed = Could not connect. Check internet connection.
 chat-voice-select-input = Select input device.
+chat-attach-image = Attach images
+chat-attach-file = Attach files
+chat-attach-camera = Use camera
 
 ## User profile
 profile-title = User profile
@@ -127,6 +130,7 @@ shared-updating = Updating
 shared-delete = Delete
 shared-leave = Leave
 shared-confirm = Confirm
+shared-tryagain = Try again
 
 ## Notifications
 notifications-message-title = New {$messageType} message from {$senderUsername}
@@ -161,3 +165,5 @@ error-internal-server-error = An error occured.
 error-internal-db-error = An error occured.
 error-file-too-large = The file is too large (max 2MB).
 error-upload-failed = Failed to upload the file.
+error-chat-too-many-files = Too many files: max amount is {$max}.
+error-chat-file-too-large = File {$name} is too large. Max size is {$max}.

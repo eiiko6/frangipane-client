@@ -51,6 +51,9 @@ chat-create-submit = Créer
 chat-connecting = Connexion au salon...
 chat-connecting-failed = Impossible d'établir la connexion. Vérifiez votre internet.
 chat-voice-select-input = Sélectionnez un périphérique d'entrée.
+chat-attach-image = Ajouter des images
+chat-attach-file = Ajouter des fichiers
+chat-attach-camera = Utiliser la caméra
 
 ## User profile
 profile-title = Profil d'utilisateur
@@ -125,6 +128,7 @@ shared-updating = Mise à jour...
 shared-delete = Supprimer
 shared-leave = Quitter
 shared-confirm = Confirmer
+shared-tryagain = Try again
 
 ## Notifications
 notifications-message-title = Nouveau message {$messageType} de {$senderUsername}
