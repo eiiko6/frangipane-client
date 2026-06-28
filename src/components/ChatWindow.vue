@@ -40,7 +40,11 @@
             </div>
         </div>
 
-        <div v-if="isSocketConnected" class="input-container">
+        <div v-if="isSocketConnected" class="input-container" :class="{ 'is-loading': isSending }">
+            <!-- <div v-if="isSending" class="sending-overlay"> -->
+            <!--     <i class="fas fa-spinner fa-spin"></i> -->
+            <!-- </div> -->
+
             <button v-if="isOwner && !currentRoom?.global" class="invite-btn" @click="showInviteModal = true"
                 :title="$t('chat-invite-title')">
                 <i class="fa-solid fa-users"></i>
@@ -54,14 +58,14 @@
                 <p>{{ connectionError }}</p>
             </div>
 
-            <MessageInput v-if="isSocketConnected" ref="messageInputRef" @send="onSend" />
+            <MessageInput v-if="isSocketConnected" ref="messageInputRef" :disabled="isSending" @send="onSend" />
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch, nextTick, computed } from "vue";
-import { fetchMessages, sendMessage } from "../api/messages";
+import { fetchMessages, sendMessage, uploadMessage } from "../api/messages";
 import type { Message, Room, User } from "../types";
 import { API_WS } from '../main.ts';
 import { apiFetch } from '../api/client';
@@ -94,6 +98,7 @@ const messageInputRef = ref<InstanceType<typeof MessageInput> | null>(null);
 const currentUser = ref<User | null>(null);
 const currentRoom = ref<Room | null>(null);
 const connectionError = ref<string | null>(null);
+const isSending = ref(false);
 
 // Pagination State
 const isLoadingMore = ref(false);
@@ -319,9 +324,25 @@ const handleGlobalKeyDown = (event: KeyboardEvent) => {
     }
 };
 
-async function onSend(content: string) {
-    if (props.uuid === 'none') return;
-    await sendMessage(props.uuid, content);
+async function onSend(content: string, files?: File[]) {
+    if (props.uuid === 'none' || isSending.value) return;
+
+    isSending.value = true;
+    try {
+        if (files && files.length > 0) {
+            await uploadMessage(props.uuid, content, files);
+        } else {
+            await sendMessage(props.uuid, content);
+        }
+    } catch (err) {
+        console.error("Failed to send message:", err);
+        // You might want to show a toast here
+    } finally {
+        isSending.value = false;
+        nextTick(() => {
+            messageInputRef.value?.focus();
+        });
+    }
 }
 
 async function toggleVoice() {

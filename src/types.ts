@@ -31,14 +31,21 @@ export interface Room {
     unread_count: number
 }
 
+export interface Attachment {
+    uuid: string;
+    file_type: 'image' | 'video' | 'textfile' | 'binaryfile';
+    file_name: string;
+}
+
 export interface Message {
-    uuid: string
-    room_uuid: string
-    sender: string
-    sender_uuid: string
-    message_type: 'text'
-    content: string
-    sent_at: string
+    uuid: string;
+    room_uuid: string;
+    sender: string;
+    sender_uuid: string;
+    message_type: 'text' | 'attachment';
+    content: string;
+    sent_at: string;
+    attachments?: Attachment[];
 }
 
 export interface Friend {

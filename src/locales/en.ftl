@@ -51,6 +51,9 @@ chat-create-submit = Create
 chat-connecting = Connecting to room...
 chat-connecting-failed = Could not connect. Check internet connection.
 chat-voice-select-input = Select input device.
+chat-attach-image = Attach images
+chat-attach-file = Attach files
+chat-attach-camera = Use camera
 
 ## User profile
 profile-title = User profile
