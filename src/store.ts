@@ -9,9 +9,16 @@ import { UpdateUserResponse } from './types'
 import { reactive } from 'vue'
 import { API } from './main'
 import { applyTheme } from './themeLoader.ts';
+import { setLanguage } from './i18n'
 
 let store: Store | null = null
 export const initAuth = getAuthData
+
+export interface UserConfig {
+    language: string | null;
+    theme: string | null;
+    compact_layout: boolean | null;
+}
 
 async function getStore() {
     if (!store) store = await load('store.json')
@@ -75,17 +82,116 @@ export async function getLastRoom(): Promise<string | null> {
     return (await s.get<string>('last_room_uuid')) ?? null
 }
 
+// ==== Global config logic ====
+
+export async function getLocalConfig(): Promise<UserConfig> {
+    const s = await getStore();
+    let config = await s.get<UserConfig>('config');
+
+    if (!config) {
+        // Fallback migration check for old config fields
+        const legacyTheme = await s.get<string>('theme');
+        const legacyLang = await s.get<string>('language');
+        const legacyCompact = await s.get<boolean>('compact_layout');
+
+        config = {
+            language: legacyLang ?? null,
+            theme: legacyTheme ?? null,
+            compact_layout: legacyCompact ?? null
+        };
+
+        await s.set('config', config);
+        await s.save();
+    }
+
+    return config;
+}
+
+export async function saveLocalConfig(config: UserConfig) {
+    const s = await getStore();
+    await s.set('config', config);
+    await s.save();
+}
+
+// Queue system to ensure config changes sync reliably with the API
+let isSyncing = false;
+let pendingConfig: UserConfig | null = null;
+const retryDelays = [500, 2000, 5000];
+
+async function syncConfigWithRetry(config: UserConfig) {
+    pendingConfig = config;
+
+    if (isSyncing) return;
+    isSyncing = true;
+
+    while (pendingConfig !== null) {
+        const configToUpload = pendingConfig;
+        pendingConfig = null;
+
+        let success = false;
+        let attempt = 0;
+
+        while (!success) {
+            const auth = await getAuthData();
+            if (!auth.token) {
+                // Stop syncing if the session is cleared
+                isSyncing = false;
+                return;
+            }
+
+            try {
+                await apiFetch<UserConfig>('/account/save-config', {
+                    method: 'POST',
+                    body: JSON.stringify(configToUpload),
+                });
+                success = true;
+            } catch (error) {
+                const delay = retryDelays[attempt] ?? 5000;
+                attempt++;
+                console.warn(`Sync failed. Retrying in ${delay / 1000}s...`, error);
+                await new Promise((resolve) => setTimeout(resolve, delay));
+            }
+        }
+    }
+
+    isSyncing = false;
+}
+
+export async function fetchAndApplyRemoteConfig() {
+    const auth = await getAuthData();
+    if (!auth.token) return;
+
+    try {
+        const remoteConfig = await apiFetch<UserConfig>('/account/get-config');
+        if (remoteConfig) {
+            await saveLocalConfig(remoteConfig);
+            if (remoteConfig.theme) {
+                applyTheme(remoteConfig.theme);
+            }
+            if (remoteConfig.language) {
+                setLanguage(remoteConfig.language);
+            }
+        }
+    } catch (error) {
+        console.error("Failed to fetch remote config:", error);
+    }
+}
+
+// ==== Language preferences ====
+
 export async function saveLocalePreference(locale: string) {
-    const s = await getStore()
-    await s.set('language', locale)
-    await s.save()
+    const config = await getLocalConfig();
+    config.language = locale;
+    await saveLocalConfig(config);
+    await syncConfigWithRetry(config);
 }
 
 export async function getLocalePreference(): Promise<string | null> {
-    const s = await getStore()
-    return (await s.get<string>('language')) ?? null
+    const config = await getLocalConfig();
+    return config.language;
 }
 
+// ==== Auth operations ====
 
 export async function login(email: string, username: string, password: string) {
     const res: LoginResponse = await apiFetch('/login', {
@@ -100,6 +206,7 @@ export async function login(email: string, username: string, password: string) {
         avatar_url: getAvatar(res.uuid)
     };
     await saveAuthData(res.token, user)
+    await fetchAndApplyRemoteConfig()
     return { token: res.token, uuid: res.uuid, isAuthenticated: true }
 }
 
@@ -189,21 +296,21 @@ export function refreshAvatar(uuid: string) {
 // ==== Color themes ====
 
 export async function saveThemePreference(themeId: string) {
-    const s = await getStore();
-    await s.set('theme', themeId);
-    await s.save();
+    const config = await getLocalConfig();
+    config.theme = themeId;
+    await saveLocalConfig(config);
     applyTheme(themeId);
+    await syncConfigWithRetry(config);
 }
 
 export async function initTheme() {
-    const s = await getStore();
-    const themeId = (await s.get<string>('theme')) || 'default';
+    const themeId = await getThemePreference();
     applyTheme(themeId);
 }
 
 export async function getThemePreference(): Promise<string> {
-    const s = await getStore()
-    return (await s.get<string>('theme')) ?? 'default'
+    const config = await getLocalConfig();
+    return config.theme ?? 'default';
 }
 
 export async function applyStoredTheme() {
@@ -214,14 +321,15 @@ export async function applyStoredTheme() {
 // ==== Layout ====
 
 export async function saveCompactLayoutPreference(enabled: boolean) {
-    const s = await getStore();
-    await s.set('compact_layout', enabled);
-    await s.save();
+    const config = await getLocalConfig();
+    config.compact_layout = enabled;
+    await saveLocalConfig(config);
+    await syncConfigWithRetry(config);
 }
 
 export async function getCompactLayoutPreference(): Promise<boolean> {
-    const s = await getStore();
-    return (await s.get<boolean>('compact_layout')) ?? false;
+    const config = await getLocalConfig();
+    return config.compact_layout ?? false;
 }
 
 // ==== Message draft ====
